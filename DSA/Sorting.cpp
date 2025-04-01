@@ -3,7 +3,7 @@ using namespace std;
 
 int main(){
     int n = 6;
-    int arr[6] = {1,1,4,1,2,3};
+    int arr[6] = {5,6,4,1,2,3};
 
     int i = 0;
     while(i< n){
@@ -19,12 +19,12 @@ int main(){
     }
 
     i = 0;
-    while(i<n){
+    /*while(i<n){
         if(arr[i]==arr[i+1]){
             arr[i+1] = 0;
         }
         i++;
-    }
+    }*/
 
     for(int k = 0;k<n;k++){
         cout<<arr[k]<<" ";
