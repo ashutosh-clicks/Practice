@@ -1,4 +1,5 @@
 #include <iostream>
+#include<cmath>
 using namespace std;
 
 class Student{
@@ -120,6 +121,65 @@ class BankAccount{
 
 };
 
+class Person{
+    protected:
+    string person;
+    int age;
+
+    
+    public:
+    Person(){
+        person = "NAN";
+        age = 0;
+    }
+    Person(string p ,int a){
+        person = p;
+        age = a;
+    }
+};
+
+class Employee:public Person{
+    private:
+    int empid,salary;
+
+    public:
+        Employee(string p , int a, int e, int s):Person(p,a){
+        empid = e;
+        salary = s;
+    }
+
+    void display(){
+        cout<<"Name: "<<Person::person<<endl;
+        cout<<"ID: "<<empid<<endl;
+        cout<<"Age: "<<Person::age<<endl;
+        cout<<"Salary: "<<salary<<endl;
+    }
+    
+};
+
+class Math{
+    public:
+    int sum;
+
+    Math(int s){
+        sum = s;
+    }
+
+    friend Math operator+(Math a, Math b);
+    
+    
+    void display(){
+        cout<<sum;
+    }
+
+};
+
+
+Math operator+(Math a, Math b){
+    // cout<<pow(2,3);
+    return Math(pow(a.sum,b.sum));
+}
+
 int main(){
     // Student s1;;
     // s1.input("Ashutosh",1,30);
@@ -139,7 +199,12 @@ int main(){
     // ba3.setter(3,2100);
     // ba1.withdraw();
 
-    
+    // Employee *e1 = new Employee("Ashutosh",18,1001,9999999);
+    // e1->display();
+
+    Math m1(2),m2(5);
+    Math result = m1+m2;
+    result.display();
 
     return 0;
 
