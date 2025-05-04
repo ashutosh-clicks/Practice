@@ -180,6 +180,18 @@ Math operator+(Math a, Math b){
     return Math(pow(a.sum,b.sum));
 }
 
+
+class Distance{
+    public:
+    int inch,feet;
+
+    Distance(){inch = 0;feet = 0;}
+
+    Distance(int inch,int feet){this->inch = inch;this->feet = feet;}
+    void show(){
+        cout<<inch;
+    }
+};
 int main(){
     // Student s1;;
     // s1.input("Ashutosh",1,30);
@@ -202,10 +214,8 @@ int main(){
     // Employee *e1 = new Employee("Ashutosh",18,1001,9999999);
     // e1->display();
 
-    Math m1(2),m2(5);
-    Math result = m1+m2;
-    result.display();
-
+    Distance *d1 = new Distance();
+    d1->show();
     return 0;
 
 }
