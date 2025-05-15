@@ -53,7 +53,7 @@ class Queue{
 
     void dequeue(){
         if(front == NULL){
-            cout<<"XD";
+            cout<<"LMAO XD DED";
             return ;
         }
         else{
