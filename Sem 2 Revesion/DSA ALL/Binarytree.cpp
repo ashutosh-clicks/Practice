@@ -39,7 +39,6 @@ class Node{
     }
 };
 
-whbfihbjofbjlf
 
 int main(){
     Node *n1 = new Node(10);
