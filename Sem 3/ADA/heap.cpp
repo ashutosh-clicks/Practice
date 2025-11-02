@@ -39,19 +39,123 @@ class MinHeap{
         cout << endl;
     }
 
+    void heapify(int i){
+        int l = left(i);
+        int r = right(i);
+        int smallest  = i;
+
+        if (l < size && heap[l] < heap[smallest])
+            smallest = l;
+
+        if (r < size && heap[r] < heap[smallest])
+            smallest = r;
+
+        if (smallest != i) {
+            swap(heap[i], heap[smallest]);
+            heapify(smallest);
+        }
+    }
+
+    int extractMin() {
+        if (size <= 0)
+            return -1;
+
+        int root = heap[0];
+        heap[0] = heap[size - 1];
+        size--;
+
+        heapify(0);
+        return root;
+    }
+
+};
+
+class MaxHeap{
+    public:
+    int heap[100];
+    int size;
+
+    int parent(int i){return (i-1)/2;}
+    int left(int i){return 2*i+1;}
+
+    int right(int i){return 2*i+2;}
+
+    MaxHeap(){
+        size = 0;
+    }
+
+    void insert(int value){
+        if(size == 100){
+            cout<<"Heap is full";
+            return;
+        }
+        else{
+            heap[size] = value;
+            int i = size;
+            size++;
+
+            while (i != 0 && heap[parent(i)] < heap[i]) {
+                swap(heap[i], heap[parent(i)]);
+                i = parent(i);
+            }
+
+        }
+    }
+
+    void display(){
+        for(int i = 0; i<size;i++){
+            cout<<heap[i]<<" ";
+
+        }
+    }
+
+    void heapify(int i){
+        int l = left(i);
+        int r = right(i);
+        int largest = i;
+
+        if(l<size && heap[l]>largest){
+            largest = l;
+        }
+        if(r<size && heap[r]>largest){
+            largest = r;
+        }
+        if(largest != i){
+            swap(heap[i],heap[largest]);
+            heapify(largest);
+        }
+
+    }
+
+     int extractMax() {
+        if (size <= 0)
+            return -1;
+
+        int root = heap[0];
+        heap[0] = heap[size - 1];
+        size--;
+
+        heapify(0);
+        return root;
+    }
 };
 
 
 int main(){
-    MinHeap h;
+    MaxHeap h;
     h.insert(20);
     h.insert(5);
     h.insert(30);
     h.insert(2);
+    h.insert(50);
 
 
     cout << "Heap: ";
     h.display();
+
+    cout<<h.extractMax();
+
+
 
 
     return 0;
