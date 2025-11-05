@@ -42,19 +42,22 @@ class MinHeap{
     void heapify(int i){
         int l = left(i);
         int r = right(i);
-        int smallest  = i;
+        int largest  = i;
 
-        if (l < size && heap[l] < heap[smallest])
-            smallest = l;
+        if (l < size && heap[l] > heap[largest])
+            largest = l;
 
-        if (r < size && heap[r] < heap[smallest])
-            smallest = r;
+        if (r < size && heap[r] > heap[largest])
+            largest = r;
 
-        if (smallest != i) {
-            swap(heap[i], heap[smallest]);
-            heapify(smallest);
+        if (largest != i) {
+            swap(heap[i], heap[largest]);
+            heapify(i);
         }
     }
+
+
+
 
     int extractMin() {
         if (size <= 0)
@@ -126,8 +129,24 @@ class MaxHeap{
         }
 
     }
+    
+    void heapSort(){
+        int ogsize = size;
 
-     int extractMax() {
+        for(int i = size/2-1;i>=0;i--){
+            heapify(i);
+        }
+
+        for(int i = size-1;i>=1;i--){
+            swap(heap[0],heap[i]);
+            size--;
+            heapify(0);
+        }
+        size = ogsize;
+    }
+    
+
+    int extractMax() {
         if (size <= 0)
             return -1;
 
@@ -153,7 +172,8 @@ int main(){
     cout << "Heap: ";
     h.display();
 
-    cout<<h.extractMax();
+    // cout<<h.extractMax();
+    h.heapSort();
 
 
 
