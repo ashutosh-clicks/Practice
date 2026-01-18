@@ -38,6 +38,6 @@ void MergeSort(int arr[],int left,int right){
         int mid = left+(right-left)/2;
         MergeSort(arr,left,mid);
         MergeSort(arr,mid+1,right);
-        merge(arr, left,mid,right);
-    }
+        merge(arr,left, mid, right);
+       }
 }
