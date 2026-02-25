@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ashutosh — Creative Developer Portfolio</title>
+    <meta name="description"
+        content="Ashutosh's creative developer portfolio showcasing modern web development, interactive animations, and innovative digital experiences.">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Scroll Progress Bar -->
+    <div class="scroll-progress" id="scrollProgress"></div>
+
+    <!-- Navigation -->
+    <nav class="nav" id="nav">
+        <div class="nav-inner container">
+            <a href="#hero" class="nav-logo">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                    <rect width="32" height="32" rx="8" fill="#0EA5E9" />
+                    <path d="M10 22L16 10L22 22" stroke="#0F0F0F" stroke-width="2.5" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                    <line x1="12.5" y1="18" x2="19.5" y2="18" stroke="#0F0F0F" stroke-width="2.5"
+                        stroke-linecap="round" />
+                </svg>
+                <span>Ashutosh</span>
+            </a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#hero" class="nav-link active" data-section="hero">Home</a></li>
+                <li><a href="#about" class="nav-link" data-section="about">About</a></li>
+                <li><a href="#skills" class="nav-link" data-section="skills">Skills</a></li>
+                <li><a href="#projects" class="nav-link" data-section="projects">Projects</a></li>
+                <li><a href="#contact" class="nav-link" data-section="contact">Contact</a></li>
+            </ul>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- ==================== HERO SECTION ==================== -->
+    <section class="hero" id="hero">
+        <div class="hero-inner container">
+            <div class="hero-content">
+                <p class="hero-greeting">Hello, I'm</p>
+                <h1 class="hero-title">
+                    <span class="hero-title-line">Creative</span>
+                    <span class="hero-title-line accent">Developer</span>
+                </h1>
+                <p class="hero-description">I craft beautiful, interactive digital experiences with modern web
+                    technologies and captivating animations.</p>
+                <div class="hero-cta">
+                    <a href="#projects" class="btn btn-primary">View My Work</a>
+                    <a href="#contact" class="btn btn-outline">Get In Touch</a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <!-- SVG with Motion Path -->
+                <svg class="hero-svg" viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Orbital Rings -->
+                    <ellipse cx="250" cy="250" rx="180" ry="70" stroke="#0EA5E9" stroke-opacity="0.15" stroke-width="1"
+                        transform="rotate(-20 250 250)" />
+                    <ellipse cx="250" cy="250" rx="140" ry="55" stroke="#0EA5E9" stroke-opacity="0.1" stroke-width="1"
+                        transform="rotate(25 250 250)" />
+                    <ellipse cx="250" cy="250" rx="200" ry="80" stroke="#0EA5E9" stroke-opacity="0.08" stroke-width="1"
+                        transform="rotate(50 250 250)" />
+
+                    <!-- Motion Path: Figure-8 / Orbital -->
+                    <path id="motionPath1"
+                        d="M250,80 C350,80 420,170 420,250 C420,330 350,420 250,420 C150,420 80,330 80,250 C80,170 150,80 250,80 Z"
+                        stroke="none" fill="none" />
+                    <path id="motionPath2"
+                        d="M250,100 C180,100 120,160 120,250 C120,340 180,400 250,400 C320,400 380,340 380,250 C380,160 320,100 250,100 Z"
+                        stroke="none" fill="none" />
+                    <path id="motionPath3"
+                        d="M150,250 C150,150 200,100 250,100 C300,100 350,150 350,250 C350,350 300,400 250,400 C200,400 150,350 150,250 Z"
+                        stroke="none" fill="none" />
+
+                    <!-- Center Element -->
+                    <circle cx="250" cy="250" r="6" fill="#0EA5E9" opacity="0.6" />
+                    <circle cx="250" cy="250" r="3" fill="#0EA5E9" />
+                    <circle cx="250" cy="250" r="20" stroke="#0EA5E9" stroke-opacity="0.2" stroke-width="0.5"
+                        fill="none" class="pulse-ring" />
+                    <circle cx="250" cy="250" r="40" stroke="#0EA5E9" stroke-opacity="0.1" stroke-width="0.5"
+                        fill="none" class="pulse-ring pulse-ring--delayed" />
+
+                    <!-- Orbiting Particles (moved by GSAP MotionPath) -->
+                    <g id="particle1">
+                        <circle r="5" fill="#0EA5E9" filter="url(#glow)" />
+                    </g>
+                    <g id="particle2">
+                        <circle r="3.5" fill="#0EA5E9" opacity="0.7" filter="url(#glow)" />
+                    </g>
+                    <g id="particle3">
+                        <circle r="4" fill="#0EA5E9" opacity="0.5" filter="url(#glow)" />
+                    </g>
+
+                    <!-- Static Dots for depth -->
+                    <circle cx="180" cy="150" r="2" fill="#0EA5E9" opacity="0.3" />
+                    <circle cx="320" cy="350" r="1.5" fill="#0EA5E9" opacity="0.25" />
+                    <circle cx="140" cy="300" r="1.5" fill="#0EA5E9" opacity="0.2" />
+                    <circle cx="360" cy="180" r="2" fill="#0EA5E9" opacity="0.35" />
+                    <circle cx="290" cy="130" r="1" fill="#0EA5E9" opacity="0.2" />
+                    <circle cx="200" cy="380" r="1.5" fill="#0EA5E9" opacity="0.25" />
+
+                    <!-- Glow Filter -->
+                    <defs>
+                        <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                            <feGaussianBlur stdDeviation="4" result="blur" />
+                            <feMerge>
+                                <feMergeNode in="blur" />
+                                <feMergeNode in="SourceGraphic" />
+                            </feMerge>
+                        </filter>
+                    </defs>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div class="scroll-indicator">
+            <div class="scroll-indicator-line"></div>
+            <span>Scroll</span>
+        </div>
+    </section>
+
+    <!-- ==================== ABOUT SECTION ==================== -->
+    <section class="section about" id="about">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label">About Me</span>
+                <h2 class="section-title">Turning Ideas Into<br><span class="accent">Digital Reality</span></h2>
+            </div>
+            <div class="about-grid">
+                <div class="about-text">
+                    <p class="about-lead">I'm a passionate developer who loves crafting immersive web experiences that
+                        live at the intersection of design and technology.</p>
+                    <p>With a strong foundation in modern frontend technologies and a keen eye for design, I build
+                        websites and applications that are not only functional but also delightful to use. I believe in
+                        the power of meaningful animations to guide users and tell compelling stories.</p>
+                    <p>When I'm not coding, you'll find me exploring new creative tools, contributing to open-source
+                        projects, or experimenting with generative art.</p>
+                    <div class="about-stats">
+                        <div class="stat">
+                            <span class="stat-number" data-count="25">0</span><span class="stat-plus">+</span>
+                            <span class="stat-label">Projects Completed</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number" data-count="3">0</span><span class="stat-plus">+</span>
+                            <span class="stat-label">Years Experience</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number" data-count="15">0</span><span class="stat-plus">+</span>
+                            <span class="stat-label">Happy Clients</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-visual">
+                    <!-- Animated SVG Illustration -->
+                    <svg class="about-svg" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Code Editor Window -->
+                        <rect x="50" y="60" width="300" height="220" rx="12" fill="#1A1A1A" stroke="#2D2D2D"
+                            stroke-width="1" class="about-svg-element" />
+                        <!-- Title bar -->
+                        <rect x="50" y="60" width="300" height="32" rx="12" fill="#242424" class="about-svg-element" />
+                        <rect x="50" y="80" width="300" height="12" fill="#242424" />
+                        <!-- Title bar dots -->
+                        <circle cx="70" cy="76" r="5" fill="#DC2626" opacity="0.8" class="about-svg-element" />
+                        <circle cx="86" cy="76" r="5" fill="#D97706" opacity="0.8" class="about-svg-element" />
+                        <circle cx="102" cy="76" r="5" fill="#16A34A" opacity="0.8" class="about-svg-element" />
+                        <!-- Code lines -->
+                        <rect x="75" y="110" width="100" height="6" rx="3" fill="#0EA5E9" opacity="0.6"
+                            class="code-line" />
+                        <rect x="75" y="126" width="160" height="6" rx="3" fill="#4B5563" opacity="0.4"
+                            class="code-line" />
+                        <rect x="75" y="142" width="80" height="6" rx="3" fill="#10B981" opacity="0.5"
+                            class="code-line" />
+                        <rect x="165" y="142" width="60" height="6" rx="3" fill="#D97706" opacity="0.5"
+                            class="code-line" />
+                        <rect x="75" y="158" width="200" height="6" rx="3" fill="#4B5563" opacity="0.3"
+                            class="code-line" />
+                        <rect x="75" y="174" width="140" height="6" rx="3" fill="#0EA5E9" opacity="0.4"
+                            class="code-line" />
+                        <rect x="75" y="190" width="120" height="6" rx="3" fill="#4B5563" opacity="0.35"
+                            class="code-line" />
+                        <rect x="75" y="206" width="180" height="6" rx="3" fill="#10B981" opacity="0.45"
+                            class="code-line" />
+                        <rect x="75" y="222" width="90" height="6" rx="3" fill="#D97706" opacity="0.4"
+                            class="code-line" />
+                        <rect x="75" y="238" width="150" height="6" rx="3" fill="#4B5563" opacity="0.3"
+                            class="code-line" />
+                        <rect x="75" y="254" width="60" height="6" rx="3" fill="#0EA5E9" opacity="0.5"
+                            class="code-line" />
+                        <!-- Floating elements -->
+                        <rect x="280" y="300" width="80" height="50" rx="8" fill="#0EA5E9" opacity="0.1"
+                            stroke="#0EA5E9" stroke-opacity="0.3" stroke-width="1" class="float-element" />
+                        <text x="305" y="330" fill="#0EA5E9" font-size="12" font-family="JetBrains Mono" opacity="0.7"
+                            class="float-element">&lt;/&gt;</text>
+                        <rect x="40" y="300" width="70" height="45" rx="8" fill="#10B981" opacity="0.1" stroke="#10B981"
+                            stroke-opacity="0.3" stroke-width="1" class="float-element" />
+                        <text x="56" y="327" fill="#10B981" font-size="11" font-family="JetBrains Mono" opacity="0.7"
+                            class="float-element">{ }</text>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== SKILLS SECTION ==================== -->
+    <section class="section skills" id="skills">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label">Expertise</span>
+                <h2 class="section-title">Tools & Technologies<br><span class="accent">I Work With</span></h2>
+            </div>
+            <div class="skills-grid">
+                <div class="skill-card" data-skill="92">
+                    <div class="skill-icon">
+                        <svg viewBox="0 0 40 40" fill="none">
+                            <path d="M20 5L35 30H5L20 5Z" stroke="#0EA5E9" stroke-width="2" fill="#0EA5E9"
+                                fill-opacity="0.1" />
+                        </svg>
+                    </div>
+                    <h3 class="skill-name">HTML & CSS</h3>
+                    <p class="skill-desc">Semantic markup, responsive layouts, modern CSS features, animations</p>
+                    <div class="skill-bar">
+                        <div class="skill-bar-fill" data-width="92"></div>
+                    </div>
+                </div>
+                <div class="skill-card" data-skill="88">
+                    <div class="skill-icon">
+                        <svg viewBox="0 0 40 40" fill="none">
+                            <rect x="8" y="8" width="24" height="24" rx="4" stroke="#0EA5E9" stroke-width="2"
+                                fill="#0EA5E9" fill-opacity="0.1" />
+                            <path d="M15 20L18 23L25 16" stroke="#0EA5E9" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                        </svg>
+                    </div>
+                    <h3 class="skill-name">JavaScript</h3>
+                    <p class="skill-desc">ES6+, DOM manipulation, async programming, API integration</p>
+                    <div class="skill-bar">
+                        <div class="skill-bar-fill" data-width="88"></div>
+                    </div>
+                </div>
+                <div class="skill-card" data-skill="85">
+                    <div class="skill-icon">
+                        <svg viewBox="0 0 40 40" fill="none">
+                            <circle cx="20" cy="20" r="12" stroke="#0EA5E9" stroke-width="2" fill="#0EA5E9"
+                                fill-opacity="0.1" />
+                            <circle cx="20" cy="20" r="4" fill="#0EA5E9" opacity="0.6" />
+                        </svg>
+                    </div>
+                    <h3 class="skill-name">React</h3>
+                    <p class="skill-desc">Component architecture, hooks, state management, Next.js</p>
+                    <div class="skill-bar">
+                        <div class="skill-bar-fill" data-width="85"></div>
+                    </div>
+                </div>
+                <div class="skill-card" data-skill="80">
+                    <div class="skill-icon">
+                        <svg viewBox="0 0 40 40" fill="none">
+                            <path d="M8 14L20 8L32 14V26L20 32L8 26V14Z" stroke="#0EA5E9" stroke-width="2"
+                                fill="#0EA5E9" fill-opacity="0.1" />
+                            <path d="M8 14L20 20M20 20L32 14M20 20V32" stroke="#0EA5E9" stroke-width="1.5" />
+                        </svg>
+                    </div>
+                    <h3 class="skill-name">Node.js</h3>
+                    <p class="skill-desc">Express, REST APIs, middleware, database integration</p>
+                    <div class="skill-bar">
+                        <div class="skill-bar-fill" data-width="80"></div>
+                    </div>
+                </div>
+                <div class="skill-card" data-skill="90">
+                    <div class="skill-icon">
+                        <svg viewBox="0 0 40 40" fill="none">
+                            <path d="M10 30C10 30 15 10 20 10C25 10 30 30 30 30" stroke="#0EA5E9" stroke-width="2"
+                                fill="none" stroke-linecap="round" />
+                            <circle cx="20" cy="10" r="3" fill="#0EA5E9" opacity="0.6" />
+                        </svg>
+                    </div>
+                    <h3 class="skill-name">GSAP & Animation</h3>
+                    <p class="skill-desc">ScrollTrigger, MotionPath, SVG animation, micro-interactions</p>
+                    <div class="skill-bar">
+                        <div class="skill-bar-fill" data-width="90"></div>
+                    </div>
+                </div>
+                <div class="skill-card" data-skill="78">
+                    <div class="skill-icon">
+                        <svg viewBox="0 0 40 40" fill="none">
+                            <path d="M12 28L20 12L28 28H12Z" stroke="#0EA5E9" stroke-width="2" fill="none" />
+                            <line x1="16" y1="22" x2="24" y2="22" stroke="#0EA5E9" stroke-width="1.5" />
+                        </svg>
+                    </div>
+                    <h3 class="skill-name">Python</h3>
+                    <p class="skill-desc">Data analysis, automation, scripting, machine learning basics</p>
+                    <div class="skill-bar">
+                        <div class="skill-bar-fill" data-width="78"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== PROJECTS SECTION ==================== -->
+    <section class="section projects" id="projects">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label">Portfolio</span>
+                <h2 class="section-title">Selected<br><span class="accent">Projects</span></h2>
+            </div>
+            <div class="projects-grid">
+                <article class="project-card" data-tilt>
+                    <div class="project-image">
+                        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop&q=80"
+                            alt="E-Commerce Dashboard" width="600" height="400" loading="lazy" />
+                        <div class="project-overlay">
+                            <span class="project-view">View Project</span>
+                        </div>
+                    </div>
+                    <div class="project-info">
+                        <div class="project-tags">
+                            <span class="tag">React</span>
+                            <span class="tag">Node.js</span>
+                            <span class="tag">MongoDB</span>
+                        </div>
+                        <h3 class="project-title">E-Commerce Dashboard</h3>
+                        <p class="project-desc">A comprehensive analytics dashboard with real-time data visualization,
+                            inventory management, and order tracking.</p>
+                    </div>
+                </article>
+                <article class="project-card" data-tilt>
+                    <div class="project-image">
+                        <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=600&h=400&fit=crop&q=80"
+                            alt="Code Editor Theme" width="600" height="400" loading="lazy" />
+                        <div class="project-overlay">
+                            <span class="project-view">View Project</span>
+                        </div>
+                    </div>
+                    <div class="project-info">
+                        <div class="project-tags">
+                            <span class="tag">JavaScript</span>
+                            <span class="tag">CSS</span>
+                            <span class="tag">SVG</span>
+                        </div>
+                        <h3 class="project-title">Interactive Code Playground</h3>
+                        <p class="project-desc">A browser-based code editor with live preview, syntax highlighting, and
+                            collaborative editing features.</p>
+                    </div>
+                </article>
+                <article class="project-card" data-tilt>
+                    <div class="project-image">
+                        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop&q=80"
+                            alt="AI Weather App" width="600" height="400" loading="lazy" />
+                        <div class="project-overlay">
+                            <span class="project-view">View Project</span>
+                        </div>
+                    </div>
+                    <div class="project-info">
+                        <div class="project-tags">
+                            <span class="tag">Python</span>
+                            <span class="tag">API</span>
+                            <span class="tag">GSAP</span>
+                        </div>
+                        <h3 class="project-title">Animated Weather App</h3>
+                        <p class="project-desc">A beautiful weather application with animated SVG illustrations that
+                            change dynamically based on conditions.</p>
+                    </div>
+                </article>
+                <article class="project-card" data-tilt>
+                    <div class="project-image">
+                        <img src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=600&h=400&fit=crop&q=80"
+                            alt="Social Platform" width="600" height="400" loading="lazy" />
+                        <div class="project-overlay">
+                            <span class="project-view">View Project</span>
+                        </div>
+                    </div>
+                    <div class="project-info">
+                        <div class="project-tags">
+                            <span class="tag">Next.js</span>
+                            <span class="tag">Prisma</span>
+                            <span class="tag">Auth</span>
+                        </div>
+                        <h3 class="project-title">Social Media Platform</h3>
+                        <p class="project-desc">A full-stack social platform with real-time messaging, user profiles,
+                            post feeds, and engagement analytics.</p>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== CONTACT SECTION ==================== -->
+    <section class="section contact" id="contact">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label">Get In Touch</span>
+                <h2 class="section-title">Let's Build Something<br><span class="accent">Amazing Together</span></h2>
+            </div>
+            <div class="contact-grid">
+                <div class="contact-info">
+                    <p class="contact-lead">I'm always open to new opportunities and interesting projects. Whether you
+                        have a question or just want to say hi, feel free to reach out.</p>
+                    <div class="contact-methods">
+                        <div class="contact-method">
+                            <div class="contact-method-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0EA5E9"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path
+                                        d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                                    <polyline points="22,6 12,13 2,6" />
+                                </svg>
+                            </div>
+                            <div>
+                                <span class="contact-method-label">Email</span>
+                                <a href="mailto:hello@ashutosh.dev" class="contact-method-value">hello@ashutosh.dev</a>
+                            </div>
+                        </div>
+                        <div class="contact-method">
+                            <div class="contact-method-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0EA5E9"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
+                                    <circle cx="12" cy="10" r="3" />
+                                </svg>
+                            </div>
+                            <div>
+                                <span class="contact-method-label">Location</span>
+                                <span class="contact-method-value">India</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="social-links">
+                        <a href="#" class="social-link" aria-label="GitHub">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                            </svg>
+                        </a>
+                        <a href="#" class="social-link" aria-label="LinkedIn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                            </svg>
+                        </a>
+                        <a href="#" class="social-link" aria-label="Twitter">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                <form class="contact-form" id="contactForm">
+                    <div class="form-group">
+                        <label for="name" class="form-label">Full Name</label>
+                        <input type="text" id="name" name="name" class="form-input" placeholder="John Doe" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email" class="form-label">Email Address</label>
+                        <input type="email" id="email" name="email" class="form-input" placeholder="john@example.com"
+                            required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message" class="form-label">Message</label>
+                        <textarea id="message" name="message" class="form-input form-textarea"
+                            placeholder="Tell me about your project..." rows="5" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full">
+                        <span>Send Message</span>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="22" y1="2" x2="11" y2="13" />
+                            <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                        </svg>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== FOOTER ==================== -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-inner">
+                <p class="footer-text">&copy; 2026 Ashutosh. Crafted with passion and GSAP.</p>
+                <a href="#hero" class="back-to-top" aria-label="Back to top">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="18 15 12 9 6 15" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- GSAP CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/MotionPathPlugin.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
