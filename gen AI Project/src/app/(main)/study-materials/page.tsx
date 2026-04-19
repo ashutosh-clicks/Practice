@@ -5,18 +5,28 @@ import connectMongo from "@/lib/mongodb";
 import Material from "@/models/Material";
 import { FileText, CalendarDays } from "lucide-react";
 import Link from "next/link";
+import { ShareButton } from "@/components/features/ShareButton";
+import mongoose from "mongoose";
 
 export const dynamic = "force-dynamic";
 
 export default async function StudyMaterialsPage() {
   const session = await getServerSession(authOptions);
+  const userId = (session?.user as any)?.id;
   
   // Fetch materials for current user
   let materials: any[] = [];
   try {
-    if (session?.user && (session.user as any).id) {
+    if (userId) {
       await connectMongo();
-      materials = await Material.find({ userId: (session.user as any).id })
+      const userObjectId = new mongoose.Types.ObjectId(userId);
+
+      materials = await Material.find({ 
+        $or: [
+          { userId: userObjectId },
+          { sharedWith: userObjectId }
+        ]
+      })
         .sort({ createdAt: -1 })
         .lean();
     }
@@ -103,10 +113,11 @@ export default async function StudyMaterialsPage() {
                    </div>
                  </div>
                  
-                 <div style={{ marginTop: "auto", borderTop: "1px solid var(--border-color)", paddingTop: "var(--space-3)", display: "flex", justifyContent: "space-between" }}>
+                 <div style={{ marginTop: "auto", borderTop: "1px solid var(--border-color)", paddingTop: "var(--space-3)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                    <span style={{ fontSize: "var(--text-xs)", color: "var(--primary-color)", fontWeight: "var(--weight-medium)" }}>
                      View Details
                    </span>
+                   <ShareButton resourceId={m._id.toString()} resourceType="material" variant="icon" />
                  </div>
                </Link>
              ))}

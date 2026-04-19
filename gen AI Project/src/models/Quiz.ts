@@ -3,6 +3,7 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 export interface IQuiz extends Document {
   materialId: mongoose.Types.ObjectId;
   userId: mongoose.Types.ObjectId;
+  sharedWith?: mongoose.Types.ObjectId[];
   title: string;
   questions: {
     question: string;
@@ -18,6 +19,7 @@ const QuizSchema = new Schema<IQuiz>(
   {
     materialId: { type: Schema.Types.ObjectId, ref: 'Material', required: true },
     userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    sharedWith: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     title: { type: String, required: true },
     questions: [
       {

@@ -6,6 +6,7 @@ export interface IMaterial extends Document {
   content: string; 
   fileUrl: string;
   userId: mongoose.Types.ObjectId;
+  sharedWith?: mongoose.Types.ObjectId[];
   fileType: string;
   createdAt: Date;
   updatedAt: Date;
@@ -18,6 +19,7 @@ const MaterialSchema = new Schema<IMaterial>(
     content: { type: String, required: true }, // Extracted parsed text
     fileUrl: { type: String, required: true }, // Path to the temporarily saved local file
     userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    sharedWith: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     fileType: { type: String, default: 'application/pdf' },
   },
   { timestamps: true }

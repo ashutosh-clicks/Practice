@@ -4,17 +4,27 @@ import connectMongo from "@/lib/mongodb";
 import RevisionNotes from "@/models/RevisionNotes";
 import Link from "next/link";
 import { StickyNote, CalendarDays } from "lucide-react";
+import { ShareButton } from "@/components/features/ShareButton";
+import mongoose from "mongoose";
 
 export const dynamic = "force-dynamic";
 
 export default async function NotesPage() {
   const session = await getServerSession(authOptions);
+  const userId = (session?.user as any)?.id;
   
   let notes: any[] = [];
   try {
-    if (session?.user && (session.user as any).id) {
+    if (userId) {
       await connectMongo();
-      notes = await RevisionNotes.find({ userId: (session.user as any).id })
+      const userObjectId = new mongoose.Types.ObjectId(userId);
+
+      notes = await RevisionNotes.find({ 
+        $or: [
+          { userId: userObjectId },
+          { sharedWith: userObjectId }
+        ]
+      })
         .sort({ createdAt: -1 })
         .lean();
     }
@@ -80,14 +90,17 @@ export default async function NotesPage() {
                   {note.title}
                 </h2>
               </div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "auto" }}>
                 <p className="text-muted" style={{ fontSize: "var(--text-sm)", margin: 0 }}>
                   {note.sections.length} Sections
                 </p>
-                <p className="text-muted" style={{ fontSize: "var(--text-xs)", display: "flex", alignItems: "center", gap: "var(--space-1)", margin: 0 }}>
-                  <CalendarDays size={12} />
-                  {new Date(note.createdAt).toLocaleDateString()}
-                </p>
+                <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
+                  <p className="text-muted" style={{ fontSize: "var(--text-xs)", display: "flex", alignItems: "center", gap: "var(--space-1)", margin: 0 }}>
+                    <CalendarDays size={12} />
+                    {new Date(note.createdAt).toLocaleDateString()}
+                  </p>
+                  <ShareButton resourceId={note._id.toString()} resourceType="notes" variant="icon" />
+                </div>
               </div>
             </Link>
           ))}

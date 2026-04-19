@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, FileText, CalendarDays } from "lucide-react";
 import MaterialActions from "@/components/features/MaterialActions";
+import { ShareButton } from "@/components/features/ShareButton";
 
 export default async function MaterialDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   let material: any = null;
@@ -22,7 +23,8 @@ export default async function MaterialDetailsPage({ params }: { params: Promise<
 
   return (
     <div>
-      <header style={{ marginBottom: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
+      <header style={{ marginBottom: "var(--space-6)", display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "var(--space-4)" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
         <Link href="/study-materials" style={{ display: "flex", alignItems: "center", gap: "var(--space-1)", fontSize: "var(--text-sm)", color: "var(--text-muted)", textDecoration: "none", width: "fit-content" }}>
           <ArrowLeft size={16} /> Back to Library
         </Link>
@@ -35,7 +37,9 @@ export default async function MaterialDetailsPage({ params }: { params: Promise<
             <CalendarDays size={16} /> Uploaded on {new Date(material.createdAt).toLocaleDateString()}
           </p>
         </div>
-      </header>
+      </div>
+      <ShareButton resourceId={material._id.toString()} resourceType="material" />
+    </header>
 
       <section style={{
         backgroundColor: "var(--surface-raised)",

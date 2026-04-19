@@ -199,3 +199,40 @@ button {
   box-shadow: var(--shadow-md);
   border-color: var(--primary-color);
 }
+
+/* Typing Indicator Animation */
+.dot-typing {
+  position: relative;
+  left: -9999px;
+  width: 6px;
+  height: 6px;
+  border-radius: 5px;
+  background-color: var(--primary-color);
+  color: var(--primary-color);
+  box-shadow: 9984px 0 0 0 var(--primary-color), 9999px 0 0 0 var(--primary-color), 10014px 0 0 0 var(--primary-color);
+  animation: dot-typing 1.5s infinite linear;
+}
+
+@keyframes dot-typing {
+  0% {
+    box-shadow: 9984px 0 0 0 var(--primary-color), 9999px 0 0 0 var(--primary-color), 10014px 0 0 0 var(--primary-color);
+  }
+  16.667% {
+    box-shadow: 9984px -6px 0 0 var(--primary-color), 9999px 0 0 0 var(--primary-color), 10014px 0 0 0 var(--primary-color);
+  }
+  33.333% {
+    box-shadow: 9984px 0 0 0 var(--primary-color), 9999px 0 0 0 var(--primary-color), 10014px 0 0 0 var(--primary-color);
+  }
+  50% {
+    box-shadow: 9984px 0 0 0 var(--primary-color), 9999px -6px 0 0 var(--primary-color), 10014px 0 0 0 var(--primary-color);
+  }
+  66.667% {
+    box-shadow: 9984px 0 0 0 var(--primary-color), 9999px 0 0 0 var(--primary-color), 10014px 0 0 0 var(--primary-color);
+  }
+  83.333% {
+    box-shadow: 9984px 0 0 0 var(--primary-color), 9999px 0 0 0 var(--primary-color), 10014px -6px 0 0 var(--primary-color);
+  }
+  100% {
+    box-shadow: 9984px 0 0 0 var(--primary-color), 9999px 0 0 0 var(--primary-color), 10014px 0 0 0 var(--primary-color);
+  }
+}

@@ -14,6 +14,7 @@ export function Sidebar() {
     { name: "Quizzes", path: "/quizzes" },
     { name: "Revision Notes", path: "/notes" },
     { name: "AI Tutor Session", path: "/tutor" },
+    { name: "Friends", path: "/friends" },
   ];
 
   return (

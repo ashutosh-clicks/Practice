@@ -23,14 +23,6 @@
   align-items: center;
 }
 
-.searchIcon {
-  position: absolute;
-  left: var(--space-3);
-  color: var(--text-muted);
-  font-size: var(--text-sm);
-  pointer-events: none;
-}
-
 .searchInput {
   padding: var(--space-2) var(--space-4) var(--space-2) var(--space-8);
   border: 1px solid var(--border-color);

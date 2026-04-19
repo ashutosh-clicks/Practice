@@ -5,20 +5,31 @@ import RevisionNotes from "@/models/RevisionNotes";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { ShareButton } from "@/components/features/ShareButton";
+import mongoose from "mongoose";
 
 export default async function NotesDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params;
   const session = await getServerSession(authOptions);
+  const userId = (session?.user as any)?.id;
   
   if (!session?.user) {
     notFound();
   }
 
-  await connectMongo();
-  const notes = await RevisionNotes.findOne({ 
-    _id: resolvedParams.id,
-    userId: (session.user as any).id
-  }).lean();
+  let notes: any = null;
+  try {
+    if (userId) {
+      await connectMongo();
+      const userObjectId = new mongoose.Types.ObjectId(userId);
+      notes = await RevisionNotes.findOne({ 
+        _id: resolvedParams.id,
+        $or: [{ userId: userObjectId }, { sharedWith: userObjectId }]
+      }).lean();
+    }
+  } catch (e) {
+    console.error("Error fetching notes detail:", e);
+  }
 
   if (!notes) {
     notFound();
@@ -28,11 +39,14 @@ export default async function NotesDetailsPage({ params }: { params: Promise<{ i
 
   return (
     <div>
-      <header style={{ marginBottom: "var(--space-6)" }}>
-        <Link href="/notes" style={{ display: "inline-flex", alignItems: "center", gap: "var(--space-2)", fontSize: "var(--text-sm)", color: "var(--text-muted)", marginBottom: "var(--space-4)" }}>
-          <ArrowLeft size={16} /> Back to Notes
-        </Link>
-        <h1 style={{ fontSize: "var(--text-3xl)", fontWeight: "var(--weight-bold)" }}>{serializedNotes.title}</h1>
+      <header style={{ marginBottom: "var(--space-6)", display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "var(--space-4)" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
+          <Link href="/notes" style={{ display: "inline-flex", alignItems: "center", gap: "var(--space-2)", fontSize: "var(--text-sm)", color: "var(--text-muted)", marginBottom: "var(--space-4)" }}>
+            <ArrowLeft size={16} /> Back to Notes
+          </Link>
+          <h1 style={{ fontSize: "var(--text-3xl)", fontWeight: "var(--weight-bold)", margin: 0 }}>{serializedNotes.title}</h1>
+        </div>
+        <ShareButton resourceId={serializedNotes._id} resourceType="notes" />
       </header>
       
       <main style={{ display: "flex", flexDirection: "column", gap: "var(--space-6)", maxWidth: "var(--container-lg)", margin: "0 auto" }}>

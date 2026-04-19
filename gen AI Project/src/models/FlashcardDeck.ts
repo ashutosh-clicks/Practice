@@ -3,6 +3,7 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 export interface IFlashcardDeck extends Document {
   materialId: mongoose.Types.ObjectId;
   userId: mongoose.Types.ObjectId;
+  sharedWith?: mongoose.Types.ObjectId[];
   title: string;
   cards: { front: string; back: string }[];
   createdAt: Date;
@@ -13,6 +14,7 @@ const FlashcardDeckSchema = new Schema<IFlashcardDeck>(
   {
     materialId: { type: Schema.Types.ObjectId, ref: 'Material', required: true },
     userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    sharedWith: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     title: { type: String, required: true },
     cards: [
       {

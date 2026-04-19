@@ -157,4 +157,3 @@ export default function MaterialActions({ materialId }: { materialId: string }) 
     </div>
   );
 }
-

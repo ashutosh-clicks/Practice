@@ -4,17 +4,27 @@ import connectMongo from "@/lib/mongodb";
 import FlashcardDeck from "@/models/FlashcardDeck";
 import Link from "next/link";
 import { Layers } from "lucide-react";
+import { ShareButton } from "@/components/features/ShareButton";
+import mongoose from "mongoose";
 
 export const dynamic = "force-dynamic";
 
 export default async function FlashcardsPage() {
   const session = await getServerSession(authOptions);
+  const userId = (session?.user as any)?.id;
   
   let decks: any[] = [];
   try {
-    if (session?.user && (session.user as any).id) {
+    if (userId) {
       await connectMongo();
-      decks = await FlashcardDeck.find({ userId: (session.user as any).id })
+      const userObjectId = new mongoose.Types.ObjectId(userId);
+
+      decks = await FlashcardDeck.find({ 
+        $or: [
+          { userId: userObjectId },
+          { sharedWith: userObjectId }
+        ]
+      })
         .sort({ createdAt: -1 })
         .lean();
     }
@@ -80,9 +90,12 @@ export default async function FlashcardsPage() {
                   {deck.title}
                 </h2>
               </div>
-              <p className="text-muted" style={{ fontSize: "var(--text-sm)", margin: 0 }}>
-                {deck.cards.length} Cards
-              </p>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "auto" }}>
+                <p className="text-muted" style={{ fontSize: "var(--text-sm)", margin: 0 }}>
+                  {deck.cards.length} Cards
+                </p>
+                <ShareButton resourceId={deck._id.toString()} resourceType="flashcard" variant="icon" />
+              </div>
             </Link>
           ))}
         </div>

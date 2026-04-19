@@ -3,6 +3,7 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 export interface IRevisionNotes extends Document {
   materialId: mongoose.Types.ObjectId;
   userId: mongoose.Types.ObjectId;
+  sharedWith?: mongoose.Types.ObjectId[];
   title: string;
   sections: { heading: string; bullets: string[] }[];
   createdAt: Date;
@@ -13,6 +14,7 @@ const RevisionNotesSchema = new Schema<IRevisionNotes>(
   {
     materialId: { type: Schema.Types.ObjectId, ref: 'Material', required: true },
     userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    sharedWith: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     title: { type: String, required: true },
     sections: [
       {

@@ -4,17 +4,27 @@ import connectMongo from "@/lib/mongodb";
 import Quiz from "@/models/Quiz";
 import Link from "next/link";
 import { CheckSquare } from "lucide-react";
+import { ShareButton } from "@/components/features/ShareButton";
+import mongoose from "mongoose";
 
 export const dynamic = "force-dynamic";
 
 export default async function QuizzesPage() {
   const session = await getServerSession(authOptions);
+  const userId = (session?.user as any)?.id;
   
   let quizzes: any[] = [];
   try {
-    if (session?.user && (session.user as any).id) {
+    if (userId) {
       await connectMongo();
-      quizzes = await Quiz.find({ userId: (session.user as any).id })
+      const userObjectId = new mongoose.Types.ObjectId(userId);
+
+      quizzes = await Quiz.find({ 
+        $or: [
+          { userId: userObjectId },
+          { sharedWith: userObjectId }
+        ]
+      })
         .sort({ createdAt: -1 })
         .lean();
     }
@@ -80,9 +90,12 @@ export default async function QuizzesPage() {
                   {quiz.title}
                 </h2>
               </div>
-              <p className="text-muted" style={{ fontSize: "var(--text-sm)", margin: 0 }}>
-                {quiz.questions.length} Questions
-              </p>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "auto" }}>
+                <p className="text-muted" style={{ fontSize: "var(--text-sm)", margin: 0 }}>
+                  {quiz.questions.length} Questions
+                </p>
+                <ShareButton resourceId={quiz._id.toString()} resourceType="quiz" variant="icon" />
+              </div>
             </Link>
           ))}
         </div>
