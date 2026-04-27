@@ -3,6 +3,8 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import connectMongo from "@/lib/mongodb";
 import Material from "@/models/Material";
+import DocumentChunk from "@/models/DocumentChunk";
+import { chunkText, generateEmbeddings } from "@/lib/embeddings";
 import { promises as fs } from "fs";
 import path from "path";
 
@@ -49,15 +51,42 @@ export async function POST(req: Request) {
     await connectMongo();
 
     const title = formData.get("title") as string || file.name.replace(/\.[^/.]+$/, ""); // Strip extension
+    const userId = (session.user as any).id;
 
     const newMaterial = await Material.create({
       title,
       originalFileName: file.name,
       content: extractedText.trim(),
       fileUrl: `/uploads/${safeFilename}`,
-      userId: (session.user as any).id,
+      userId,
       fileType: file.type,
     });
+
+    // --- Vector Embedding Pipeline ---
+    // Chunk the extracted text and generate embeddings for vector search
+    try {
+      const chunks = chunkText(extractedText.trim());
+
+      if (chunks.length > 0) {
+        console.log(`[Embeddings] Generating embeddings for ${chunks.length} chunks...`);
+        const embeddings = await generateEmbeddings(chunks);
+
+        // Build chunk documents for bulk insert
+        const chunkDocs = chunks.map((content, index) => ({
+          materialId: newMaterial._id,
+          userId,
+          chunkIndex: index,
+          content,
+          embedding: embeddings[index],
+        }));
+
+        await DocumentChunk.insertMany(chunkDocs);
+        console.log(`[Embeddings] Stored ${chunkDocs.length} chunks with embeddings for material "${title}"`);
+      }
+    } catch (embeddingError: any) {
+      // Log but don't fail the upload — material is still usable without embeddings
+      console.error("[Embeddings] Failed to generate embeddings:", embeddingError.message);
+    }
 
     return NextResponse.json({ message: "File uploaded and processed successfully", materialId: newMaterial._id }, { status: 201 });
   } catch (error: any) {
