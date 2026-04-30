@@ -79,7 +79,6 @@ async function getRelevantContext(
   }
 
   // --- Fallback: Load full documents (pre-RAG behavior) ---
-  console.log(`[RAG Fallback] Loading full documents for materialId: ${materialId}`);
   
   if (materialId === "all") {
     const materials = await Material.find({
@@ -89,7 +88,6 @@ async function getRelevantContext(
       .limit(3)
       .lean();
 
-    console.log(`[RAG Fallback] Found ${materials.length} materials for user ${userObjectId}`);
 
     if (materials.length > 0) {
       return materials
@@ -138,7 +136,6 @@ export async function POST(req: Request) {
       materialId || "all"
     );
 
-    console.log(`[Tutor] Context retrieved: ${contextText ? contextText.length + " chars" : "EMPTY"} | materialId: ${materialId || "all"} | userId: ${userId}`);
 
     if (!contextText) {
       contextText = "No study materials available context. Inform the user to upload materials first.";
