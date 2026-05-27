@@ -103,3 +103,5 @@ export default async function QuizzesPage() {
     </div>
   );
 }
+
+// Made by Ashutosh Pandey

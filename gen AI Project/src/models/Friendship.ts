@@ -22,3 +22,5 @@ FriendshipSchema.index({ requesterId: 1, recipientId: 1 }, { unique: true });
 
 const Friendship: Model<IFriendship> = mongoose.models?.Friendship || mongoose.model<IFriendship>("Friendship", FriendshipSchema);
 export default Friendship;
+
+// Made by Ashutosh Pandey

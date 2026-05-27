@@ -31,3 +31,5 @@ const DocumentChunk: Model<IDocumentChunk> =
   mongoose.model<IDocumentChunk>("DocumentChunk", DocumentChunkSchema);
 
 export default DocumentChunk;
+
+// Made by Ashutosh Pandey

@@ -127,3 +127,5 @@ export default async function SettingsPage() {
     </div>
   );
 }
+
+// Made by Ashutosh Pandey

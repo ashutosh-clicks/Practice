@@ -140,3 +140,5 @@ export default function FlashcardViewer({ cards }: { cards: Card[] }) {
     </div>
   );
 }
+
+// Made by Ashutosh Pandey

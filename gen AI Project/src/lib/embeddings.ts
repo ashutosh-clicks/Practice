@@ -122,3 +122,5 @@ export async function embedQuery(query: string): Promise<number[]> {
   });
   return response.embeddings?.[0]?.values || [];
 }
+
+// Made by Ashutosh Pandey

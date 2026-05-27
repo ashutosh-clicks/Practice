@@ -47,3 +47,5 @@ export default async function FlashcardDetailsPage({ params }: { params: Promise
     </div>
   );
 }
+
+// Made by Ashutosh Pandey

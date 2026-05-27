@@ -28,3 +28,5 @@ const FlashcardDeckSchema = new Schema<IFlashcardDeck>(
 
 const FlashcardDeck: Model<IFlashcardDeck> = mongoose.models?.FlashcardDeck || mongoose.model<IFlashcardDeck>("FlashcardDeck", FlashcardDeckSchema);
 export default FlashcardDeck;
+
+// Made by Ashutosh Pandey

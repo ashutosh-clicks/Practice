@@ -34,3 +34,5 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: error.message || "Search failed" }, { status: 500 });
   }
 }
+
+// Made by Ashutosh Pandey

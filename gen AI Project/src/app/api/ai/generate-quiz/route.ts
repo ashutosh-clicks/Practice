@@ -76,3 +76,5 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: error.message || "Failed to generate quiz" }, { status: 500 });
   }
 }
+
+// Made by Ashutosh Pandey

@@ -84,3 +84,5 @@ export default async function MaterialDetailsPage({ params }: { params: Promise<
     </div>
   );
 }
+
+// Made by Ashutosh Pandey

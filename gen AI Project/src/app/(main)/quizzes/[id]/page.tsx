@@ -57,3 +57,5 @@ export default async function QuizDetailsPage({ params }: { params: Promise<{ id
     </div>
   );
 }
+
+// Made by Ashutosh Pandey

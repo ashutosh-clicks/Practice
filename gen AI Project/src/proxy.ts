@@ -30,3 +30,5 @@ export const config = {
     "/((?!_next|favicon.ico|public).*)",
   ],
 };
+
+// Made by Ashutosh Pandey

@@ -17,3 +17,5 @@ export default function AuthLayout({
     </div>
   );
 }
+
+// Made by Ashutosh Pandey

@@ -241,3 +241,5 @@ export default function QuizViewer({ questions }: { questions: Question[] }) {
   );
 }
 
+
+// Made by Ashutosh Pandey

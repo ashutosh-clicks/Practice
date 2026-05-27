@@ -198,3 +198,5 @@ export default async function FriendProfilePage({ params }: { params: Promise<{ 
     </div>
   );
 }
+
+// Made by Ashutosh Pandey

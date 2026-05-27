@@ -37,3 +37,5 @@ export async function POST(req: Request) {
     return NextResponse.json({ message: error?.message || "An error occurred during sign up" }, { status: 500 });
   }
 }
+
+// Made by Ashutosh Pandey

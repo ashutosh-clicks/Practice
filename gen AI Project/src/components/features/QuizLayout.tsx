@@ -55,3 +55,5 @@ export default function QuizLayout({ quizzes }: { quizzes: any[] }) {
     </div>
   );
 }
+
+// Made by Ashutosh Pandey
