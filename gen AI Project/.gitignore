@@ -1,6 +1,8 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# dependencies
+# ──────────────────────────────────────────────
+# Dependencies
+# ──────────────────────────────────────────────
 /node_modules
 /.pnp
 .pnp.*
@@ -10,32 +12,135 @@
 !.yarn/releases
 !.yarn/versions
 
-# testing
-/coverage
-
-# next.js
+# ──────────────────────────────────────────────
+# Next.js
+# ──────────────────────────────────────────────
 /.next/
 /out/
-
-# production
 /build
 
-# misc
-.DS_Store
-*.pem
+# ──────────────────────────────────────────────
+# TypeScript
+# ──────────────────────────────────────────────
+*.tsbuildinfo
+next-env.d.ts
 
-# debug
+# ──────────────────────────────────────────────
+# Environment & Secrets
+# ──────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+
+# ──────────────────────────────────────────────
+# Logs & Debug Output
+# ──────────────────────────────────────────────
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
+*.log
+*.log.*
+tail-log.txt
+tail-log.js
 
-# env files (can opt-in for committing if needed)
-.env*
+# ──────────────────────────────────────────────
+# Test Artifacts & Scratch Output
+# ──────────────────────────────────────────────
+test-list.txt
+error_dump.html
+test-fetch.js
+test-db.js
+test-gemini.js
+test-gemini-models.js
+test-list.js
+test-list-names.js
+test-materials.js
+test-pdf.js
+test-pdf2.js
+test-pdf-parse.js
+check-db.js
+/coverage
 
-# vercel
+# ──────────────────────────────────────────────
+# AI / ML Artifacts
+# ──────────────────────────────────────────────
+# Model weights & binaries
+*.bin
+*.safetensors
+*.ckpt
+*.pt
+*.pth
+
+# Embeddings / vector store cache
+/embeddings-cache/
+/vector-store/
+*.faiss
+*.pkl
+*.npy
+
+# ──────────────────────────────────────────────
+# Uploaded / Generated Content
+# ──────────────────────────────────────────────
+/uploads/
+/public/uploads/
+/tmp/
+*.pdf
+
+# ──────────────────────────────────────────────
+# Database
+# ──────────────────────────────────────────────
+*.sqlite
+*.sqlite3
+*.db
+
+# ──────────────────────────────────────────────
+# Testing
+# ──────────────────────────────────────────────
+/coverage
+
+# ──────────────────────────────────────────────
+# OS Files
+# ──────────────────────────────────────────────
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Linux
+*~
+
+# ──────────────────────────────────────────────
+# IDE & Editor
+# ──────────────────────────────────────────────
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ──────────────────────────────────────────────
+# Certificates & Keys
+# ──────────────────────────────────────────────
+*.pem
+*.key
+*.crt
+*.p12
+
+# ──────────────────────────────────────────────
+# Vercel
+# ──────────────────────────────────────────────
 .vercel
-
-# typescript
-*.tsbuildinfo
-next-env.d.ts
