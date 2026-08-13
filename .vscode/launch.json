@@ -1,6 +1,13 @@
 {
     "configurations": [
         {
+            "type": "java",
+            "name": "HW",
+            "request": "launch",
+            "mainClass": "HW",
+            "projectName": "Practice_1b8e3e24"
+        },
+        {
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
