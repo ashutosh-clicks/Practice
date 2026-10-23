@@ -52,3 +52,9 @@ class Pract8{
         }
     }
 }
+
+class Pract9{
+    static void execute({
+        
+    })
+}
