@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { X, Music, Users, Compass } from "lucide-react";
 import styles from "./HowItWorksModal.module.css";
 
 interface Props {
@@ -38,14 +39,14 @@ export default function HowItWorksModal({ isOpen, onClose }: Props) {
         <div className={styles.header}>
           <div>
             <h2 id="modal-title" className={styles.title}>
-              How MusicMind Works
+              How find.fm Works
             </h2>
             <p className={styles.subtitle}>
               Full-Stack Hybrid Machine Learning Recommendation Architecture
             </p>
           </div>
           <button className={styles.closeButton} onClick={onClose} aria-label="Close modal">
-            ×
+            <X size={18} />
           </button>
         </div>
 
@@ -63,7 +64,9 @@ export default function HowItWorksModal({ isOpen, onClose }: Props) {
 
           {/* Signal 1: Content K-Means */}
           <div className={styles.card}>
-            <div className={styles.cardIcon}>🎵</div>
+            <div className={styles.cardIcon}>
+              <Music size={18} />
+            </div>
             <div className={styles.cardContent}>
               <h3 className={styles.cardTitle}>1. Content-Based Audio Clustering (Spotify)</h3>
               <p className={styles.cardDesc}>
@@ -74,7 +77,9 @@ export default function HowItWorksModal({ isOpen, onClose }: Props) {
 
           {/* Signal 2: Collaborative Filtering */}
           <div className={styles.card}>
-            <div className={styles.cardIcon}>👥</div>
+            <div className={styles.cardIcon}>
+              <Users size={18} />
+            </div>
             <div className={styles.cardContent}>
               <h3 className={styles.cardTitle}>2. Item-Based Collaborative Filtering (Last.fm)</h3>
               <p className={styles.cardDesc}>
@@ -85,7 +90,9 @@ export default function HowItWorksModal({ isOpen, onClose }: Props) {
 
           {/* Signal 3: Russell's Circumplex Mood Model */}
           <div className={styles.card}>
-            <div className={styles.cardIcon}>🧠</div>
+            <div className={styles.cardIcon}>
+              <Compass size={18} />
+            </div>
             <div className={styles.cardContent}>
               <h3 className={styles.cardTitle}>3. Russell&apos;s Circumplex Mood & Activity Engine</h3>
               <p className={styles.cardDesc}>
@@ -98,3 +105,4 @@ export default function HowItWorksModal({ isOpen, onClose }: Props) {
     </div>
   );
 }
+

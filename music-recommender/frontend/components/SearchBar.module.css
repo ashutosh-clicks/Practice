@@ -1,43 +1,203 @@
-﻿.form {
-  display: flex; gap: var(--space-3); align-items: center;
+/* ── Search Bar Container ── */
+.searchContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: 100%;
 }
+
+/* Scope Pills Bar */
+.scopeBar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.scopeLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.scopePill {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all var(--dur-fast) var(--ease-default);
+}
+
+.scopePill:hover {
+  color: var(--text-primary);
+  background: var(--surface-raised);
+  transform: translateY(-1px);
+}
+
+.scopePillActive {
+  background: rgba(213, 16, 7, 0.15);
+  border-color: var(--primary);
+  color: #F87171;
+  box-shadow: 0 0 10px rgba(213, 16, 7, 0.2);
+}
+
+.pillIcon {
+  color: inherit;
+  opacity: 0.9;
+}
+
+/* Main Form */
+.form {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+}
+
 .inputWrapper {
-  flex: 1; position: relative; display: flex; align-items: center;
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
 }
+
 .icon {
-  position: absolute; left: var(--space-4);
-  font-size: var(--text-base); pointer-events: none; z-index: 1;
+  position: absolute;
+  left: var(--space-4);
+  font-size: var(--text-base);
+  pointer-events: none;
+  z-index: 1;
 }
+
 .input {
-  width: 100%; padding: var(--space-4) var(--space-4) var(--space-4) 3rem;
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius-xl); color: var(--text-primary);
-  font-size: var(--text-base); outline: none;
-  transition: border-color var(--dur-normal) var(--ease),
-              box-shadow var(--dur-normal) var(--ease);
+  width: 100%;
+  padding: var(--space-4) var(--space-4) var(--space-4) 3.2rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  color: var(--text-primary);
+  font-size: var(--text-base);
+  outline: none;
+  transition: border-color var(--dur-normal) var(--ease-default),
+              box-shadow var(--dur-normal) var(--ease-default);
 }
+
 .input:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-glow);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
 }
-.input::placeholder { color: var(--text-disabled); }
-.input::-webkit-search-cancel-button { display: none; }
+
+.input::placeholder {
+  color: var(--text-disabled);
+}
+
+.input::-webkit-search-cancel-button {
+  display: none;
+}
+
 .spinner {
-  position: absolute; right: var(--space-4);
-  width: 18px; height: 18px;
+  position: absolute;
+  right: var(--space-4);
+  width: 18px;
+  height: 18px;
   border: 2px solid var(--border);
-  border-top-color: var(--accent);
+  border-top-color: var(--primary);
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }
-@keyframes spin { to { transform: rotate(360deg); } }
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 .button {
   padding: var(--space-4) var(--space-6);
-  background: var(--accent); color: #fff;
-  border-radius: var(--radius-xl); font-size: var(--text-sm); font-weight: 600;
-  flex-shrink: 0; transition: background var(--dur-fast) var(--ease),
-                               transform var(--dur-fast) var(--ease);
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-xl);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-default),
+              transform var(--dur-fast) var(--ease-default);
 }
-.button:hover:not(:disabled) { background: var(--accent-hover); }
-.button:active:not(:disabled) { transform: scale(0.97); }
-.button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.button:hover:not(:disabled) {
+  background: #0284C7;
+}
+
+.button:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Quick Suggestion Chips */
+.suggestionsRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  overflow-x: auto;
+  padding-top: 2px;
+}
+
+.suggestLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-disabled);
+  white-space: nowrap;
+}
+
+.chipsScroll {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.chipsScroll::-webkit-scrollbar {
+  display: none;
+}
+
+.suggestChip {
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 9px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all var(--dur-fast) var(--ease-default);
+}
+
+.suggestChip:hover {
+  background: rgba(213, 16, 7, 0.12);
+  border-color: var(--primary);
+  color: #F87171;
+  transform: translateY(-1.5px);
+}
+
+.chipNoteIcon {
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.chipName {
+  font-size: 11px;
+}

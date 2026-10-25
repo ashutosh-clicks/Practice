@@ -1,42 +1,49 @@
-﻿@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 /* ══════════════════════════════════════════════════
    Design Tokens
 ══════════════════════════════════════════════════ */
 :root {
-  /* Colors — Dark theme only */
-  --bg:              #0F0F0F;
-  --surface:         #1A1A1A;
-  --surface-raised:  #242424;
-  --surface-hover:   #2E2E2E;
-  --border:          #2D2D2D;
-  --border-subtle:   #1F1F1F;
+  /* Colors — Last.fm Dark Theme */
+  --bg:              #0D0D0D;
+  --surface:         #171717;
+  --surface-raised:  #222222;
+  --surface-hover:   #2A2A2A;
+  --border:          #2C2C2C;
+  --border-subtle:   #1C1C1C;
 
   --text-primary:    #F9FAFB;
   --text-secondary:  #D1D5DB;
   --text-muted:      #9CA3AF;
   --text-disabled:   #6B7280;
 
-  --accent:          #0EA5E9;
-  --accent-hover:    #0284C7;
-  --accent-active:   #0369A1;
-  --accent-ghost:    rgba(14, 165, 233, 0.08);
-  --accent-glow:     rgba(14, 165, 233, 0.20);
+  /* Last.fm Iconic Red */
+  --primary:         #D51007;
+  --primary-hover:   #B90C05;
+  --primary-active:  #9B0A04;
+  --primary-ghost:   rgba(213, 16, 7, 0.10);
+  --primary-glow:    rgba(213, 16, 7, 0.28);
+
+  --accent:          #D51007;
+  --accent-hover:    #B90C05;
+  --accent-active:   #9B0A04;
+  --accent-ghost:    rgba(213, 16, 7, 0.10);
+  --accent-glow:     rgba(213, 16, 7, 0.28);
 
   --success:         #16A34A;
   --success-bg:      rgba(22, 163, 74, 0.10);
   --warning:         #D97706;
   --error:           #DC2626;
 
-  /* Badge colors */
-  --badge-content:       rgba(14, 165, 233, 0.15);
-  --badge-collab:        rgba(139, 92, 246, 0.15);
-  --badge-context:       rgba(16, 185, 129, 0.15);
-  --badge-trending:      rgba(245, 158, 11, 0.15);
-  --badge-content-text:  #38BDF8;
-  --badge-collab-text:   #A78BFA;
-  --badge-context-text:  #34D399;
-  --badge-trending-text: #FBBF24;
+  /* Badge colors — Last.fm aesthetic */
+  --badge-content:       rgba(213, 16, 7, 0.14);
+  --badge-collab:        rgba(239, 68, 68, 0.14);
+  --badge-context:       rgba(251, 146, 60, 0.14);
+  --badge-trending:      rgba(245, 158, 11, 0.14);
+  --badge-content-text:  #F87171;
+  --badge-collab-text:   #FCA5A5;
+  --badge-context-text:  #FDBA74;
+  --badge-trending-text: #FCD34D;
 
   /* Spacing */
   --space-1: 0.25rem;
@@ -51,7 +58,7 @@
   --space-16: 4rem;
 
   /* Typography */
-  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --text-xs:   0.75rem;
   --text-sm:   0.875rem;
   --text-base: 1rem;
@@ -69,16 +76,50 @@
   --radius-full: 9999px;
 
   /* Shadows */
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.3);
-  --shadow-md: 0 4px 6px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.3);
-  --shadow-lg: 0 10px 25px rgba(0,0,0,0.5), 0 4px 10px rgba(0,0,0,0.3);
-  --shadow-glow: 0 0 20px var(--accent-glow);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.5), 0 1px 2px rgba(0,0,0,0.4);
+  --shadow-md: 0 4px 8px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.4);
+  --shadow-lg: 0 10px 25px rgba(0,0,0,0.6), 0 4px 10px rgba(0,0,0,0.4);
+  --shadow-glow: 0 0 20px var(--primary-glow);
 
-  /* Transitions */
-  --ease:        cubic-bezier(0.4, 0, 0.2, 1);
+  /* Transitions — Crisp & Snappy */
+  --ease:        cubic-bezier(0.16, 1, 0.3, 1);
   --dur-fast:    100ms;
   --dur-normal:  200ms;
   --dur-slow:    300ms;
+}
+
+/* ══════════════════════════════════════════════════
+   Crisp Animation Keyframes
+══════════════════════════════════════════════════ */
+@keyframes fadeSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes popScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 rgba(213, 16, 7, 0);
+  }
+  50% {
+    box-shadow: 0 0 14px rgba(213, 16, 7, 0.35);
+  }
 }
 
 /* ══════════════════════════════════════════════════

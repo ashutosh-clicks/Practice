@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { ExplanationData } from "@/types";
+import { X, ArrowRight, Lightbulb, Check } from "lucide-react";
 import styles from "./ExplanationModal.module.css";
 
 interface Props {
@@ -54,7 +55,7 @@ export default function ExplanationModal({ isOpen, onClose, data, isLoading }: P
             onClick={onClose}
             aria-label="Close modal"
           >
-            ×
+            <X size={18} />
           </button>
         </div>
 
@@ -73,7 +74,9 @@ export default function ExplanationModal({ isOpen, onClose, data, isLoading }: P
                 </p>
                 <p className={styles.artistName}>{data.seed_track.artists}</p>
               </div>
-              <span className={styles.arrow} aria-hidden="true">➔</span>
+              <span className={styles.arrow} aria-hidden="true">
+                <ArrowRight size={18} />
+              </span>
               <div className={styles.trackBox}>
                 <span className={styles.trackLabel}>Recommended</span>
                 <p className={styles.trackName} title={data.recommended_track.track_name}>
@@ -88,7 +91,9 @@ export default function ExplanationModal({ isOpen, onClose, data, isLoading }: P
               <ul className={styles.reasonList}>
                 {data.reasons.map((reason, i) => (
                   <li key={i} className={styles.reasonItem}>
-                    <span aria-hidden="true">💡</span>
+                    <span className={styles.reasonIcon} aria-hidden="true">
+                      <Lightbulb size={15} />
+                    </span>
                     <span>{reason}</span>
                   </li>
                 ))}
@@ -114,7 +119,10 @@ export default function ExplanationModal({ isOpen, onClose, data, isLoading }: P
                       <td>{feat === "tempo" ? comp.recommended.toFixed(1) : (comp.recommended * 100).toFixed(0) + "%"}</td>
                       <td>
                         {comp.similar ? (
-                          <span className={styles.matchPill}>✓ Strong Match</span>
+                          <span className={styles.matchPill}>
+                            <Check size={12} style={{ marginRight: 4, verticalAlign: "middle" }} />
+                            Strong Match
+                          </span>
                         ) : (
                           <span className={styles.complementaryPill}>Complementary</span>
                         )}

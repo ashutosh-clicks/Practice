@@ -1,4 +1,15 @@
-import { Track, RecommendRequest, Activity, MoodQuadrant, ExplanationData } from "@/types";
+import {
+  Track,
+  RecommendRequest,
+  Activity,
+  MoodQuadrant,
+  ExplanationData,
+  ModelStats,
+  ImportArtResponse,
+  AlbumArtStatus,
+  TrendPeriod,
+  UserProfileData,
+} from "@/types";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
@@ -14,12 +25,13 @@ async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
   return res.json() as Promise<T>;
 }
 
-export async function searchTracks(query: string, n = 10): Promise<Track[]> {
+export async function searchTracks(query: string, searchBy = "all", n = 10): Promise<Track[]> {
   const data = await apiFetch<{ results: Track[] }>(
-    `/search?query=${encodeURIComponent(query)}&n=${n}`
+    `/search?query=${encodeURIComponent(query)}&search_by=${searchBy}&n=${n}`
   );
   return data.results;
 }
+
 
 export async function getRecommendations(body: RecommendRequest): Promise<Track[]> {
   const data = await apiFetch<{ recommendations: Track[] }>("/recommend", {
@@ -56,7 +68,42 @@ export async function getMoods(): Promise<MoodQuadrant[]> {
   return data.moods;
 }
 
+export async function getRandomTracks(n = 5): Promise<Track[]> {
+  const data = await apiFetch<{ tracks: Track[] }>(`/random?n=${n}`);
+  return data.tracks;
+}
+
+export async function getModelStats(): Promise<ModelStats> {
+  return apiFetch<ModelStats>("/stats");
+}
+
 export async function checkHealth(): Promise<{ status: string; model_loaded: boolean; tracks_loaded: number }> {
   return apiFetch("/health");
 }
+
+export async function importLastFmArt(apiKey?: string, limit = 50): Promise<ImportArtResponse> {
+  return apiFetch<ImportArtResponse>("/import-lastfm-art", {
+    method: "POST",
+    body: JSON.stringify({ api_key: apiKey || null, limit }),
+  });
+}
+
+export async function getAlbumArtStatus(): Promise<AlbumArtStatus> {
+  return apiFetch<AlbumArtStatus>("/album-art/status");
+}
+
+export async function getUserProfile(
+  username: string,
+  period: TrendPeriod = "weekly",
+  apiKey?: string
+): Promise<UserProfileData> {
+  const params = new URLSearchParams({
+    username: username.trim(),
+    period,
+  });
+  if (apiKey) params.append("api_key", apiKey.trim());
+  return apiFetch<UserProfileData>(`/user-profile?${params.toString()}`);
+}
+
+
 

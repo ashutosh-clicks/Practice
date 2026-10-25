@@ -42,7 +42,9 @@ export interface Track {
   features: AudioFeatures;
   scores?: ScoreBreakdown;
   badges?: Badge[];
+  image_url?: string | null;
 }
+
 
 export interface Activity {
   key: string;
@@ -90,4 +92,113 @@ export interface ExplanationData {
   reasons: string[];
   feature_comparison: Record<string, FeatureComparisonItem>;
 }
+
+export interface ModelStats {
+  tracks_count: number;
+  clusters_count: number;
+  features_used: string[];
+  artists_count: number;
+  interactions_count: number;
+  sparsity_pct: number;
+  genres_count: number;
+}
+
+export interface ImportArtResponse {
+  newly_imported: number;
+  already_cached: number;
+  total_cached: number;
+  total_tracks: number;
+}
+
+export interface AlbumArtStatus {
+  cached_count: number;
+  total_tracks: number;
+  has_lastfm_key: boolean;
+}
+
+export type TrendPeriod = "weekly" | "monthly" | "yearly";
+
+export interface UserInfo {
+  username: string;
+  real_name: string;
+  avatar: string;
+  total_playcount: number;
+  artist_count: number;
+  track_count: number;
+  registered: string;
+}
+
+export interface UserSummary {
+  period_scrobbles: number;
+  daily_average: number;
+  listening_hours: number;
+  top_genre: string;
+  mood_alignment: string;
+  diversity_score: number;
+}
+
+export interface TrendPoint {
+  label: string;
+  date: string;
+  scrobbles: number;
+}
+
+export interface ListeningTrends {
+  chart_type: "daily" | "monthly" | "yearly";
+  points: TrendPoint[];
+  peak: TrendPoint;
+  average: number;
+}
+
+export interface ProfileArtist {
+  rank: number;
+  name: string;
+  playcount: number;
+  image: string;
+  url: string;
+}
+
+export interface ProfileTrack {
+  rank: number;
+  name: string;
+  artist: string;
+  playcount: number;
+  image: string;
+  duration: number;
+  url: string;
+}
+
+export interface ProfileAlbum {
+  rank: number;
+  name: string;
+  artist: string;
+  playcount: number;
+  image: string;
+  url: string;
+}
+
+export interface UserAcousticProfile {
+  energy: number;
+  valence: number;
+  danceability: number;
+  acousticness: number;
+  tempo: number;
+  dominant_genre: string;
+  mood_label: string;
+  mood_key: string;
+}
+
+export interface UserProfileData {
+  user: UserInfo;
+  period: TrendPeriod;
+  period_label: string;
+  summary: UserSummary;
+  trends: ListeningTrends;
+  top_artists: ProfileArtist[];
+  top_tracks: ProfileTrack[];
+  top_albums: ProfileAlbum[];
+  acoustic_profile: UserAcousticProfile;
+}
+
+
 

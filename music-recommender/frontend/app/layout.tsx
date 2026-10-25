@@ -1,11 +1,11 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "MusicMind — Hybrid Music Recommendations",
+  title: "find.fm — Hybrid Music Recommender & Scrobbler Discovery",
   description:
-    "Discover music tailored to your mood, activity, and listening history. Powered by K-Means clustering, collaborative filtering (Last.fm), and context-aware recommendations.",
-  keywords: ["music recommendation", "spotify", "collaborative filtering", "mood-based music"],
+    "Discover music tailored to your mood, activity, and listening scrobbles. Powered by K-Means clustering, Last.fm collaborative filtering, and context-aware recommendations.",
+  keywords: ["find.fm", "music recommendation", "last.fm", "scrobbler", "hybrid ml", "mood-based music"],
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

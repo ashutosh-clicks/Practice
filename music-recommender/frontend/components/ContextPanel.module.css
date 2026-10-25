@@ -36,7 +36,7 @@
   cursor: pointer;
   padding: 2px 6px;
   border-radius: var(--radius-sm);
-  transition: color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+  transition: color var(--dur-fast) var(--ease-default), background var(--dur-fast) var(--ease-default);
 }
 
 .clearBtn:hover {
@@ -50,89 +50,92 @@
   margin: 0 0 var(--space-4) 0;
 }
 
-/* ══════════ ACTIVITIES ══════════ */
-.activityGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-3);
+.titleIcon {
+  color: var(--primary);
+  flex-shrink: 0;
 }
 
-.activityCard {
+.microIcon {
+  color: inherit;
+  opacity: 0.9;
+  flex-shrink: 0;
+}
+
+/* ══════════ ACTIVE SUMMARY ══════════ */
+.activeSummary {
+  margin: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  background: rgba(213, 16, 7, 0.08);
+  border: 1px solid rgba(213, 16, 7, 0.25);
+  border-radius: var(--radius-lg);
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
   gap: var(--space-2);
-  padding: var(--space-3);
-  background: var(--surface-raised);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  cursor: pointer;
-  text-align: left;
-  transition: transform var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
-  position: relative;
-  overflow: hidden;
 }
 
-.activityCard:hover {
-  transform: translateY(-2px);
-  border-color: var(--primary);
-  background: rgba(14, 165, 233, 0.05);
-}
-
-.activityActive {
-  border-color: var(--primary) !important;
-  background: rgba(14, 165, 233, 0.12) !important;
-  box-shadow: 0 0 14px rgba(14, 165, 233, 0.25);
-}
-
-.activityTopRow {
+.summaryTop {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 100%;
 }
 
-.activityIconBox {
-  width: 34px;
-  height: 34px;
-  border-radius: var(--radius-md);
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid var(--border-subtle);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.15rem;
-}
-
-.activeDot {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: var(--primary);
-  color: #ffffff;
+.summaryLabel {
   font-size: 10px;
   font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 0 8px rgba(14, 165, 233, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--primary);
 }
 
-.activityLabel {
-  font-size: var(--text-xs);
-  font-weight: 600;
-  color: var(--text-primary);
-  line-height: 1.2;
-}
-
-.activityCue {
-  font-size: 10px;
+.clearAllBtn {
+  background: transparent;
+  border: none;
+  font-size: 11px;
   color: var(--text-muted);
-  line-height: 1.2;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.clearAllBtn:hover {
+  color: var(--text-primary);
+}
+
+.summaryTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.summaryTag {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  background: var(--badge-context);
+  color: var(--badge-context-text);
+  border: 1px solid rgba(251, 146, 60, 0.3);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.summaryTagMood {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  background: rgba(213, 16, 7, 0.15);
+  color: #F87171;
+  border: 1px solid rgba(213, 16, 7, 0.3);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.coordSub {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  opacity: 0.8;
 }
 
 /* ══════════ MOODS (Russell Circumplex) ══════════ */
@@ -153,13 +156,14 @@
   border-radius: var(--radius-lg);
   cursor: pointer;
   text-align: left;
-  transition: transform var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
+  transition: transform var(--dur-fast) var(--ease-default), border-color var(--dur-fast) var(--ease-default), background var(--dur-fast) var(--ease-default), box-shadow var(--dur-fast) var(--ease-default);
   position: relative;
+  overflow: hidden;
 }
 
 .moodCard:hover {
   transform: translateY(-2px);
-  border-color: var(--border);
+  border-color: var(--border-subtle);
   background: rgba(255, 255, 255, 0.05);
 }
 
@@ -172,25 +176,25 @@
 .moodHappyActive {
   border-color: #F59E0B !important;
   background: rgba(245, 158, 11, 0.12) !important;
-  box-shadow: 0 0 14px rgba(245, 158, 11, 0.25);
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.28);
 }
 
 .moodCalmActive {
   border-color: #10B981 !important;
   background: rgba(16, 185, 129, 0.12) !important;
-  box-shadow: 0 0 14px rgba(16, 185, 129, 0.25);
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.28);
 }
 
 .moodSadActive {
   border-color: #6366F1 !important;
   background: rgba(99, 102, 241, 0.12) !important;
-  box-shadow: 0 0 14px rgba(99, 102, 241, 0.25);
+  box-shadow: 0 0 16px rgba(99, 102, 241, 0.28);
 }
 
 .moodIntenseActive {
   border-color: #EF4444 !important;
   background: rgba(239, 68, 68, 0.12) !important;
-  box-shadow: 0 0 14px rgba(239, 68, 68, 0.25);
+  box-shadow: 0 0 16px rgba(239, 68, 68, 0.28);
 }
 
 .moodHeader {
@@ -199,8 +203,9 @@
   justify-content: space-between;
 }
 
-.moodEmoji {
-  font-size: 1.25rem;
+.moodEmojiBox {
+  font-size: 1.3rem;
+  line-height: 1;
 }
 
 .moodCoord {
@@ -209,16 +214,30 @@
   font-weight: 700;
   color: var(--text-disabled);
   letter-spacing: 0.05em;
-  background: rgba(0, 0, 0, 0.2);
-  padding: 1px 4px;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 1px 5px;
   border-radius: var(--radius-sm);
+}
+
+.moodTitleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 2px;
 }
 
 .moodName {
   font-size: var(--text-xs);
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text-primary);
   line-height: 1.2;
+}
+
+.quadrantPill {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--text-disabled);
+  font-family: var(--font-mono);
 }
 
 .moodDesc {
@@ -227,7 +246,22 @@
   line-height: 1.2;
 }
 
-/* ══════════ 2D CIRCUMPLEX MINI-MAP ══════════ */
+.moodMetrics {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.microMeter {
+  font-size: 9px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+/* ══════════ 2D CIRCUMPLEX INTERACTIVE PLANE ══════════ */
 .mapWrapper {
   margin-top: var(--space-3);
   display: flex;
@@ -246,10 +280,16 @@
   justify-content: space-between;
 }
 
+.mapHintText {
+  color: var(--primary);
+  font-size: 9px;
+  text-transform: none;
+}
+
 .quadrantMap {
   position: relative;
   width: 100%;
-  aspect-ratio: 1.5;
+  aspect-ratio: 1.6;
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   overflow: hidden;
@@ -257,42 +297,272 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr 1fr;
+  cursor: crosshair;
+  user-select: none;
 }
 
-.quadrantCell {
+.axisX {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.axisY {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.axisLabelTop,
+.axisLabelBottom,
+.axisLabelLeft,
+.axisLabelRight {
+  position: absolute;
+  font-size: 8px;
+  color: var(--text-disabled);
+  font-family: var(--font-mono);
+  pointer-events: none;
+  z-index: 3;
+}
+
+.axisLabelTop { top: 3px; left: 50%; transform: translateX(-50%); }
+.axisLabelBottom { bottom: 3px; left: 50%; transform: translateX(-50%); }
+.axisLabelLeft { left: 4px; top: 50%; transform: translateY(-50%); }
+.axisLabelRight { right: 4px; top: 50%; transform: translateY(-50%); }
+
+.zone {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
-  cursor: pointer;
-  transition: all var(--dur-fast) var(--ease);
-  border: 1px dashed var(--border-subtle);
+  transition: all var(--dur-fast) var(--ease-default);
   position: relative;
 }
 
-.quadrantCell:hover {
-  background: rgba(255, 255, 255, 0.03);
+.zoneIntense { background: rgba(239, 68, 68, 0.02); }
+.zoneHappy   { background: rgba(245, 158, 11, 0.02); }
+.zoneSad     { background: rgba(99, 102, 241, 0.02); }
+.zoneCalm    { background: rgba(16, 185, 129, 0.02); }
+
+.zone:hover {
+  background: rgba(255, 255, 255, 0.04);
 }
 
-.cellActive {
-  background: rgba(14, 165, 233, 0.15) !important;
-  border-color: var(--primary) !important;
-  border-style: solid !important;
+.zoneActive {
+  background: rgba(14, 165, 233, 0.12) !important;
 }
 
-.quadrantEmoji {
-  font-size: 1.1rem;
-}
-
-.quadrantTag {
+.zoneTag {
   font-size: 9px;
   font-weight: 600;
   color: var(--text-muted);
+  pointer-events: none;
 }
 
-.cellActive .quadrantTag {
+.zoneActive .zoneTag {
   color: var(--primary);
+  font-weight: 700;
+}
+
+.targetPuck {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.puckDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--primary);
+  box-shadow: 0 0 10px var(--primary);
+}
+
+.puckRing {
+  position: absolute;
+  inset: -3px;
+  border: 1px solid var(--primary);
+  border-radius: 50%;
+  animation: pulsePuck 1.5s infinite var(--ease-default);
+}
+
+@keyframes pulsePuck {
+  0% { transform: scale(0.9); opacity: 0.8; }
+  50% { transform: scale(1.4); opacity: 0.3; }
+  100% { transform: scale(0.9); opacity: 0.8; }
+}
+
+/* ══════════ ACTIVITIES ══════════ */
+.categoryFilters {
+  display: flex;
+  gap: var(--space-1);
+  margin-bottom: var(--space-3);
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.filterPill {
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all var(--dur-fast) var(--ease-default);
+}
+
+.filterPill:hover {
+  color: var(--text-primary);
+  border-color: var(--border-subtle);
+}
+
+.filterPillActive {
+  background: var(--primary);
+  color: #ffffff;
+  border-color: var(--primary);
+  font-weight: 600;
+  box-shadow: 0 0 10px rgba(213, 16, 7, 0.3);
+}
+
+.activityGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+.activityCard {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  text-align: left;
+  transition: transform var(--dur-fast) var(--ease-default), border-color var(--dur-fast) var(--ease-default), background var(--dur-fast) var(--ease-default), box-shadow var(--dur-fast) var(--ease-default);
+  position: relative;
+  overflow: hidden;
+}
+
+.activityCard:hover {
+  transform: translateY(-2px);
+  border-color: var(--primary);
+  background: rgba(213, 16, 7, 0.06);
+}
+
+.activityActive {
+  border-color: var(--primary) !important;
+  background: rgba(213, 16, 7, 0.14) !important;
+  box-shadow: 0 0 16px rgba(213, 16, 7, 0.28);
+}
+
+.activityTopRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.activityIconBox {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+}
+
+.energyIndicator {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: auto;
+  margin-right: 4px;
+}
+
+.energyDot {
+  width: 4px;
+  height: 8px;
+  border-radius: 1px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.energyDotFilled {
+  background: var(--primary);
+}
+
+.activeDot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 8px rgba(213, 16, 7, 0.6);
+}
+
+.activityInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+}
+
+.activityLabel {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.activityCue {
+  font-size: 10px;
+  color: var(--text-muted);
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.activityMetric {
+  font-size: 9px;
+  color: var(--primary);
+  font-family: var(--font-mono);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ══════════ SLIDERS ══════════ */
@@ -317,6 +587,13 @@
 .sliderLabel {
   font-size: var(--text-xs);
   font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.sliderIcon {
+  flex-shrink: 0;
 }
 
 .sliderValue {
@@ -351,7 +628,7 @@
   border-radius: 50%;
   background: var(--thumb-color, var(--primary));
   border: 2px solid var(--bg);
-  transition: transform var(--dur-fast) var(--ease);
+  transition: transform var(--dur-fast) var(--ease-default);
 }
 
 .slider::-webkit-slider-thumb:hover {
@@ -361,58 +638,4 @@
 .slider:focus-visible {
   outline: 2px solid var(--primary);
   outline-offset: 4px;
-}
-
-/* ══════════ ACTIVE SUMMARY ══════════ */
-.activeSummary {
-  margin: var(--space-4);
-  padding: var(--space-3) var(--space-4);
-  background: rgba(14, 165, 233, 0.08);
-  border: 1px solid rgba(14, 165, 233, 0.25);
-  border-radius: var(--radius-lg);
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-2);
-}
-
-.summaryLabel {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text-muted);
-  width: 100%;
-}
-
-.summaryTag {
-  font-size: 11px;
-  font-weight: 500;
-  padding: 2px 8px;
-  border-radius: var(--radius-full);
-  background: var(--badge-context);
-  color: var(--badge-context-text);
-  border: 1px solid rgba(52, 211, 153, 0.3);
-}
-
-.summaryTagMood {
-  font-size: 11px;
-  font-weight: 500;
-  padding: 2px 8px;
-  border-radius: var(--radius-full);
-  background: var(--badge-collab);
-  color: var(--badge-collab-text);
-  border: 1px solid rgba(167, 139, 250, 0.3);
-}
-
-.clearAllBtn {
-  margin-left: auto;
-  background: transparent;
-  border: none;
-  font-size: 11px;
-  color: var(--text-muted);
-  cursor: pointer;
-  text-decoration: underline;
-}
-
-.clearAllBtn:hover {
-  color: var(--text-primary);
 }

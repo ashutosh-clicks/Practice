@@ -17,7 +17,9 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from thefuzz import process as fuzzy_process
 
+import re
 from context_engine import ACTIVITY_PROFILES, ContextEngine, MOOD_BY_KEY
+from album_art import AlbumArtManager
 
 warnings.filterwarnings("ignore")
 
@@ -28,6 +30,89 @@ FEATURE_COLS = [
 ]
 
 N_CLUSTERS = 60  # Tunable via elbow analysis in notebooks
+
+# ── Genre Affinity & Family Clustering ──
+GENRE_FAMILIES = {
+    "rock": {
+        "rock", "alt-rock", "alternative", "classic-rock", "hard-rock",
+        "psych-rock", "punk", "punk-rock", "grunge", "indie", "garage", "british", "rock-n-roll", "rockabilly"
+    },
+    "metal": {
+        "metal", "heavy-metal", "hard-rock", "black-metal", "death-metal", "metalcore", "grindcore", "goth", "industrial"
+    },
+    "pop": {
+        "pop", "synth-pop", "indie-pop", "dance", "disco", "power-pop", "electro", "electronic", "club", "k-pop", "j-pop"
+    },
+    "electronic": {
+        "electronic", "electro", "edm", "house", "deep-house", "progressive-house",
+        "chicago-house", "techno", "minimal-techno", "detroit-techno", "trance",
+        "dubstep", "drum-and-bass", "breakbeat", "idm", "ambient", "trip-hop"
+    },
+    "hip-hop": {
+        "hip-hop", "rap", "r-n-b", "soul", "funk", "groove", "dancehall", "reggae", "reggaeton", "trap"
+    },
+    "folk_acoustic": {
+        "folk", "acoustic", "singer-songwriter", "bluegrass", "country", "honky-tonk", "blues"
+    },
+    "classical": {
+        "classical", "opera", "piano"
+    },
+    "ambient_chill": {
+        "ambient", "chill", "sleep", "study", "new-age", "piano", "acoustic"
+    },
+    "latin": {
+        "latin", "latino", "reggaeton", "salsa", "samba", "pagode", "mpb", "forro", "sertanejo", "brazil", "tango"
+    },
+}
+
+NOVELTY_GENRES = {"children", "kids", "disney", "comedy", "show-tunes", "anime"}
+
+
+def clean_title(title: str) -> str:
+    """Normalize song title to detect duplicate versions/remasters."""
+    t = re.sub(
+        r"\s*-\s*(remastered|live|radio edit|20\d\d mix|remaster|\d\d\d\d remaster).*",
+        "",
+        title,
+        flags=re.IGNORECASE,
+    )
+    t = re.sub(
+        r"\s*\((remastered|live|feat\.|with|\d\d\d\d mix|version).*",
+        "",
+        t,
+        flags=re.IGNORECASE,
+    )
+    return t.strip().lower()
+
+
+def compute_genre_affinity(seed_genre: str, candidate_genre: str) -> float:
+    """Returns a multiplier [0.35 to 1.25] based on genre compatibility."""
+    if not seed_genre or not candidate_genre:
+        return 1.0
+
+    sg = str(seed_genre).lower().strip()
+    cg = str(candidate_genre).lower().strip()
+
+    # Exact genre match
+    if sg == cg:
+        return 1.25
+
+    # Novelty genre penalty if seed is not novelty
+    if cg in NOVELTY_GENRES and sg not in NOVELTY_GENRES:
+        return 0.35
+
+    # Check shared genre family
+    for fam, genres in GENRE_FAMILIES.items():
+        if sg in genres and cg in genres:
+            return 1.15
+
+    # Cross-family penalization for disparate genres
+    if (sg in GENRE_FAMILIES.get("classical", set()) and cg in GENRE_FAMILIES.get("metal", set())) or \
+       (sg in GENRE_FAMILIES.get("metal", set()) and cg in GENRE_FAMILIES.get("classical", set())) or \
+       (sg in GENRE_FAMILIES.get("hip-hop", set()) and cg in GENRE_FAMILIES.get("classical", set())):
+        return 0.40
+
+    return 0.85
 
 
 class MusicRecommender:
@@ -60,6 +145,7 @@ class MusicRecommender:
 
         # Context engine
         self.context_engine = ContextEngine()
+        self.album_art = AlbumArtManager(cache_file=f"{model_dir}/album_art_cache.json")
         self.is_fitted = False
 
     # ─────────────────────────────────────────────────────────
@@ -251,38 +337,103 @@ class MusicRecommender:
     # Search
     # ─────────────────────────────────────────────────────────
 
-    def search(self, query: str, n: int = 10) -> list[dict]:
-        """Search tracks by name or artist (substring match + fuzzy fallback)."""
+    def search(self, query: str, search_by: str = "all", n: int = 10) -> list[dict]:
+        """
+        Search tracks with scope filtering ('all', 'track', 'artist').
+        Prioritizes exact and prefix matches on song names and artists, sorted by popularity.
+        """
         q = query.lower().strip()
+        if not q or self.spotify_df is None:
+            return []
+
         results = []
         seen_ids: set[str] = set()
 
-        # 1. Exact / substring match (fast, prioritizes high popularity)
-        name_mask = self.spotify_df["track_name"].str.lower().str.contains(q, regex=False, na=False)
-        artist_mask = self.spotify_df["artists"].str.lower().str.contains(q, regex=False, na=False)
-        exact_matches = self.spotify_df[name_mask | artist_mask].sort_values(
-            by="popularity", ascending=False
-        )
-        for _, row in exact_matches.iterrows():
-            tid = str(row.get("track_id", ""))
-            if tid not in seen_ids:
-                seen_ids.add(tid)
-                results.append(self._row_to_dict(row))
-                if len(results) >= n:
-                    return results
+        name_series = self.spotify_df["track_name"].str.lower()
+        artist_series = self.spotify_df["artists"].str.lower()
 
-        # 2. Fuzzy fallback if fewer than n results
-        if len(results) < n:
-            combined_dict = {
-                idx: f"{row['track_name']} - {row['artists']}".lower()
-                for idx, row in self.spotify_df.iterrows()
-            }
-            fuzzy_hits = fuzzy_process.extract(q, combined_dict, limit=n * 3)
+        # Tier 1: Exact matches
+        if search_by in ("track", "all"):
+            exact_tracks = self.spotify_df[name_series == q].sort_values(by="popularity", ascending=False)
+            for _, row in exact_tracks.iterrows():
+                tid = str(row.get("track_id", ""))
+                if tid not in seen_ids:
+                    seen_ids.add(tid)
+                    results.append(self._row_to_dict(row))
+                    if len(results) >= n:
+                        return results
+
+        if search_by in ("artist", "all"):
+            exact_artists = self.spotify_df[artist_series == q].sort_values(by="popularity", ascending=False)
+            for _, row in exact_artists.iterrows():
+                tid = str(row.get("track_id", ""))
+                if tid not in seen_ids:
+                    seen_ids.add(tid)
+                    results.append(self._row_to_dict(row))
+                    if len(results) >= n:
+                        return results
+
+        # Tier 2: Starts with (Prefix matches)
+        if search_by in ("track", "all"):
+            prefix_tracks = self.spotify_df[name_series.str.startswith(q, na=False)].sort_values(by="popularity", ascending=False)
+            for _, row in prefix_tracks.iterrows():
+                tid = str(row.get("track_id", ""))
+                if tid not in seen_ids:
+                    seen_ids.add(tid)
+                    results.append(self._row_to_dict(row))
+                    if len(results) >= n:
+                        return results
+
+        if search_by in ("artist", "all"):
+            prefix_artists = self.spotify_df[artist_series.str.startswith(q, na=False)].sort_values(by="popularity", ascending=False)
+            for _, row in prefix_artists.iterrows():
+                tid = str(row.get("track_id", ""))
+                if tid not in seen_ids:
+                    seen_ids.add(tid)
+                    results.append(self._row_to_dict(row))
+                    if len(results) >= n:
+                        return results
+
+        # Tier 3: Substring matches (contains)
+        if search_by in ("track", "all"):
+            sub_tracks = self.spotify_df[name_series.str.contains(q, regex=False, na=False)].sort_values(by="popularity", ascending=False)
+            for _, row in sub_tracks.iterrows():
+                tid = str(row.get("track_id", ""))
+                if tid not in seen_ids:
+                    seen_ids.add(tid)
+                    results.append(self._row_to_dict(row))
+                    if len(results) >= n:
+                        return results
+
+        if search_by in ("artist", "all"):
+            sub_artists = self.spotify_df[artist_series.str.contains(q, regex=False, na=False)].sort_values(by="popularity", ascending=False)
+            for _, row in sub_artists.iterrows():
+                tid = str(row.get("track_id", ""))
+                if tid not in seen_ids:
+                    seen_ids.add(tid)
+                    results.append(self._row_to_dict(row))
+                    if len(results) >= n:
+                        return results
+
+        # Tier 4: Fuzzy fallback for typos (only when 0 exact/prefix/substring matches found)
+        if len(results) == 0 and len(q) >= 3:
+            candidate_pool = self.spotify_df.nlargest(2000, "popularity")
+            target_field = "track_name" if search_by == "track" else "artists" if search_by == "artist" else None
+            
+            pool_dict = {}
+            for idx, row in candidate_pool.iterrows():
+                if target_field:
+                    val = str(row[target_field]).lower()
+                else:
+                    val = f"{row['track_name']} {row['artists']}".lower()
+                pool_dict[idx] = val
+
+            fuzzy_hits = fuzzy_process.extract(q, pool_dict, limit=n)
             for _, score, idx in fuzzy_hits:
-                if score < 45:
+                if score < 70:
                     continue
                 row = self.spotify_df.iloc[idx]
-                tid = str(row.get("track_id", idx))
+                tid = str(row.get("track_id", ""))
                 if tid not in seen_ids:
                     seen_ids.add(tid)
                     results.append(self._row_to_dict(row))
@@ -307,31 +458,43 @@ class MusicRecommender:
         n: int = 10,
     ) -> list[dict]:
         """
-        Generate hybrid recommendations for a seed track.
+        Generate hybrid recommendations for a seed track with dynamic weight normalization,
+        semantic genre affinity, and artist diversity control.
 
         hybrid_score = α·content + β·collaborative + γ·popularity + δ·context_alignment
-
-        Args:
-            track_id : Seed track ID.
-            mood     : Mood key ('happy', 'calm', 'sad', 'intense', 'neutral') or None.
-            activity : Activity key ('focus', 'workout', …) or None.
-            alpha    : Content-based weight.
-            beta     : Collaborative filtering weight.
-            gamma    : Popularity weight.
-            delta    : Context-alignment weight.
-            n        : Number of results.
         """
         seed_pos = self._find_track_position(track_id)
         seed_row = self.spotify_df.iloc[seed_pos]
         seed_features = self.feature_matrix[seed_pos]
         seed_cluster = int(seed_row["cluster"])
+        seed_genre = str(seed_row.get("track_genre", ""))
+        seed_artist = str(seed_row["artists_lower"]).split(";")[0].strip()
 
-        # 1. Content scores (all candidates from same cluster + overflow)
-        content_scores = self._content_scores(seed_features, seed_cluster, n_candidates=300)
+        # Dynamic Weight Normalization: guaranteed to sum to exactly 1.0
+        active_weights = {
+            "alpha": max(0.0, float(alpha)),
+            "beta": max(0.0, float(beta)),
+            "gamma": max(0.0, float(gamma)),
+        }
+        if activity or mood:
+            active_weights["delta"] = max(0.0, float(delta))
+        else:
+            active_weights["delta"] = 0.0
 
-        # 2. Collaborative scores (on-demand, single artist vector query)
-        first_artist = str(seed_row["artists_lower"]).split(";")[0].strip()
-        collab_artist_map = self._collaborative_artist_scores(first_artist)
+        w_sum = sum(active_weights.values())
+        if w_sum > 0:
+            w_alpha = active_weights["alpha"] / w_sum
+            w_beta = active_weights["beta"] / w_sum
+            w_gamma = active_weights["gamma"] / w_sum
+            w_delta = active_weights["delta"] / w_sum
+        else:
+            w_alpha, w_beta, w_gamma, w_delta = 0.45, 0.35, 0.20, 0.0
+
+        # 1. Content scores (candidates from same cluster + overflow)
+        content_scores = self._content_scores(seed_features, seed_cluster, n_candidates=350)
+
+        # 2. Collaborative scores (on-demand single artist vector query)
+        collab_artist_map = self._collaborative_artist_scores(seed_artist)
         collab_scores = self._map_artist_scores_to_tracks(collab_artist_map)
 
         # 3. Popularity scores normalised to [0, 1]
@@ -345,9 +508,8 @@ class MusicRecommender:
             context_scores = context_series.values
         else:
             context_scores = np.zeros(len(self.spotify_df))
-            delta = 0.0
 
-        # 5. Build candidate pool: top content + top collab additions
+        # 5. Build candidate pool: content + collab + top genre matches
         candidate_positions: list[int] = list(content_scores.keys())
         if collab_artist_map:
             top_collab_pos = sorted(
@@ -355,22 +517,48 @@ class MusicRecommender:
             )[:150]
             candidate_positions += [p for p in top_collab_pos if p not in set(candidate_positions)]
 
-        # Remove seed itself
+        # Add popular tracks from same genre to ensure strong stylistic baseline
+        if seed_genre:
+            same_genre_pos = self.spotify_df[
+                self.spotify_df["track_genre"] == seed_genre
+            ].nlargest(100, "popularity").index.tolist()
+            candidate_positions += [p for p in same_genre_pos if p not in set(candidate_positions)]
+
+        # Remove seed track itself
         candidate_positions = [p for p in candidate_positions if p != seed_pos]
 
-        # 6. Compute and sort hybrid scores
+        # 6. Compute hybrid scores with genre affinity shaping
         scored = []
         for pos in candidate_positions:
+            row = self.spotify_df.iloc[pos]
+            cand_genre = str(row.get("track_genre", ""))
+
             c = content_scores.get(pos, 0.0)
+            if c == 0.0:
+                c = float(cosine_similarity(seed_features.reshape(1, -1), self.feature_matrix[pos].reshape(1, -1))[0][0])
+                c = max(0.0, c)
+
             cf = float(collab_scores[pos])
             pop = float(popularity_scores[pos])
             ctx = float(context_scores[pos])
-            total = alpha * c + beta * cf + gamma * pop + delta * ctx
-            scored.append((pos, total, c, cf, pop, ctx))
+
+            # Genre affinity multiplier
+            genre_mult = compute_genre_affinity(seed_genre, cand_genre)
+
+            # Base linear combination using normalized weights
+            base_score = w_alpha * c + w_beta * cf + w_gamma * pop + w_delta * ctx
+
+            # Apply genre affinity shaping
+            adjusted_score = base_score * genre_mult
+
+            # Strictly clamp between 0.0 and 1.0 (so score out of 100 is strictly <= 100)
+            final_score = float(np.clip(adjusted_score, 0.0, 1.0))
+
+            scored.append((pos, final_score, c, cf, pop, ctx))
 
         scored.sort(key=lambda x: x[1], reverse=True)
 
-        # 7. Optional hard mood filter (applied after scoring to keep ordering)
+        # 7. Optional hard mood filter
         if mood:
             mood_name = MOOD_BY_KEY.get(mood, None)
             if mood_name:
@@ -378,10 +566,32 @@ class MusicRecommender:
                 if len(filtered) >= n:
                     scored = filtered
 
-        # 8. Assemble results
+        # 8. Diversity & De-duplication Filter:
+        # - Discard duplicate songs (remasters/live versions)
+        # - Max 2 tracks per artist (max 1 for seed's own artist)
+        artist_counts: dict[str, int] = {}
+        seen_titles = set()
+        seed_clean_title = clean_title(str(seed_row["track_name"]))
+        seen_titles.add(seed_clean_title)
+
         results = []
-        for pos, total, c, cf, pop, ctx in scored[:n]:
+        for pos, total, c, cf, pop, ctx in scored:
             row = self.spotify_df.iloc[pos]
+            cand_artist = str(row["artists_lower"]).split(";")[0].strip()
+            t_clean = clean_title(str(row["track_name"]))
+
+            # Skip duplicate titles (different remaster / live version)
+            if t_clean in seen_titles:
+                continue
+
+            # Cap tracks per artist to ensure diverse playlist
+            max_for_artist = 1 if cand_artist == seed_artist else 2
+            if artist_counts.get(cand_artist, 0) >= max_for_artist:
+                continue
+
+            artist_counts[cand_artist] = artist_counts.get(cand_artist, 0) + 1
+            seen_titles.add(t_clean)
+
             rec = self._row_to_dict(row)
             rec["scores"] = {
                 "total": round(total, 4),
@@ -392,6 +602,9 @@ class MusicRecommender:
             }
             rec["badges"] = self._build_badges(c, cf, ctx, pop, mood, activity)
             results.append(rec)
+
+            if len(results) >= n:
+                break
 
         return results
 
@@ -443,6 +656,48 @@ class MusicRecommender:
 
     def get_moods(self) -> list[dict]:
         return self.context_engine.get_mood_list()
+
+    def get_random_tracks(self, n: int = 5) -> list[dict]:
+        """Return n random recognizable tracks from the upper popularity tier."""
+        if self.spotify_df is None or len(self.spotify_df) == 0:
+            return []
+        pool = self.spotify_df.nlargest(min(50, len(self.spotify_df)), "popularity")
+        sample = pool.sample(min(n, len(pool)))
+        return [self._row_to_dict(row) for _, row in sample.iterrows()]
+
+    def get_stats(self) -> dict:
+        """Return ML architecture statistics."""
+        if not self.is_fitted or self.spotify_df is None:
+            return {
+                "tracks_count": 0,
+                "clusters_count": 0,
+                "features_used": FEATURE_COLS,
+                "artists_count": 0,
+                "interactions_count": 0,
+                "sparsity_pct": 0.0,
+                "genres_count": 0,
+            }
+        n_tracks = len(self.spotify_df)
+        n_clusters = self.kmeans.n_clusters if self.kmeans else 0
+        n_artists = len(self.code_to_artist_name)
+        n_interactions = int(self.artist_matrix.nnz) if self.artist_matrix is not None else 0
+        total_cells = (
+            int(self.artist_matrix.shape[0]) * int(self.artist_matrix.shape[1])
+            if self.artist_matrix is not None and self.artist_matrix.shape[0] > 0
+            else 1
+        )
+        sparsity = (1.0 - (n_interactions / total_cells)) * 100.0 if total_cells > 0 else 0.0
+
+        return {
+            "tracks_count": n_tracks,
+            "clusters_count": n_clusters,
+            "features_used": FEATURE_COLS,
+            "artists_count": n_artists,
+            "interactions_count": n_interactions,
+            "sparsity_pct": round(sparsity, 2),
+            "genres_count": int(self.spotify_df["track_genre"].nunique()) if "track_genre" in self.spotify_df.columns else 10,
+        }
+
 
     # ─────────────────────────────────────────────────────────
     # Internal helpers
@@ -537,8 +792,17 @@ class MusicRecommender:
         return badges
 
     def _row_to_dict(self, row: pd.Series) -> dict:
+        tid = str(row.get("track_id", ""))
+        artist = str(row.get("artists", ""))
+        track_name = str(row.get("track_name", ""))
+        album_name = str(row.get("album_name", ""))
+        image_url = None
+        if hasattr(self, "album_art") and self.album_art:
+            image_url = self.album_art.get_art_url(tid, artist, track_name, album_name)
+
         return {
-            "track_id": str(row.get("track_id", "")),
+            "track_id": tid,
+            "image_url": image_url,
             "track_name": str(row.get("track_name", "")),
             "artists": str(row.get("artists", "")),
             "album_name": str(row.get("album_name", "")),

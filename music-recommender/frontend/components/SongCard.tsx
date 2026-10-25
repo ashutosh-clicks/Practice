@@ -1,6 +1,22 @@
 "use client";
 
 import { Track, Badge } from "@/types";
+import {
+  Star,
+  Clock,
+  Disc,
+  Smile,
+  Wind,
+  CloudRain,
+  Flame,
+  CircleDot,
+  Music,
+  Users,
+  Zap,
+  TrendingUp,
+  Sparkles,
+  HelpCircle,
+} from "lucide-react";
 import FeatureRadarChart from "./FeatureRadarChart";
 import styles from "./SongCard.module.css";
 
@@ -25,6 +41,37 @@ function formatDuration(ms: number): string {
   return `${min}:${sec.toString().padStart(2, "0")}`;
 }
 
+function renderMoodIcon(moodKey?: string) {
+  switch (moodKey) {
+    case "happy":
+      return <Smile size={14} className={styles.moodIcon} />;
+    case "calm":
+      return <Wind size={14} className={styles.moodIcon} />;
+    case "sad":
+      return <CloudRain size={14} className={styles.moodIcon} />;
+    case "intense":
+    case "angry":
+      return <Flame size={14} className={styles.moodIcon} />;
+    default:
+      return <CircleDot size={14} className={styles.moodIcon} />;
+  }
+}
+
+function renderBadgeIcon(type: string) {
+  switch (type) {
+    case "content":
+      return <Music size={11} className={styles.badgeIcon} />;
+    case "collaborative":
+      return <Users size={11} className={styles.badgeIcon} />;
+    case "context":
+      return <Zap size={11} className={styles.badgeIcon} />;
+    case "trending":
+      return <TrendingUp size={11} className={styles.badgeIcon} />;
+    default:
+      return <Sparkles size={11} className={styles.badgeIcon} />;
+  }
+}
+
 export default function SongCard({ track, variant = "full", onClick, onExplain }: Props) {
   const isClickable = !!onClick;
   const isSeed = variant === "seed";
@@ -39,10 +86,14 @@ export default function SongCard({ track, variant = "full", onClick, onExplain }
       onKeyDown={isClickable ? (e) => e.key === "Enter" && onClick?.() : undefined}
       aria-label={isClickable ? `Select ${track.track_name} by ${track.artists}` : undefined}
     >
-      {/* Album art placeholder */}
+      {/* Album art */}
       <div className={styles.artWrapper}>
         <div className={styles.art} aria-hidden="true">
-          <span className={styles.artIcon}>🎵</span>
+          {track.image_url ? (
+            <img src={track.image_url} alt="" className={styles.albumImg} loading="lazy" />
+          ) : (
+            <Disc size={28} className={styles.discFallback} />
+          )}
         </div>
         {isSeed && <div className={styles.seedPulse} aria-hidden="true" />}
       </div>
@@ -54,17 +105,23 @@ export default function SongCard({ track, variant = "full", onClick, onExplain }
             <h3 className={styles.trackName}>{track.track_name}</h3>
             <p className={styles.artists}>{track.artists}</p>
           </div>
-          <span className={styles.moodBadge} title={track.mood}>
-            {track.mood_emoji}
+          <span className={styles.moodBadge} title={`Mood: ${track.mood}`}>
+            {renderMoodIcon(track.mood_key)}
           </span>
         </div>
 
         {/* Meta row */}
         <div className={styles.meta}>
           {track.genre && <span className={styles.pill}>{track.genre}</span>}
-          <span className={styles.metaItem}>⭐ {track.popularity}</span>
+          <span className={styles.metaItem}>
+            <Star size={11} className={styles.metaIcon} />
+            <span>{track.popularity}</span>
+          </span>
           {track.duration_ms > 0 && (
-            <span className={styles.metaItem}>⏱ {formatDuration(track.duration_ms)}</span>
+            <span className={styles.metaItem}>
+              <Clock size={11} className={styles.metaIcon} />
+              <span>{formatDuration(track.duration_ms)}</span>
+            </span>
           )}
           {track.explicit && <span className={styles.explicitPill}>E</span>}
         </div>
@@ -79,7 +136,8 @@ export default function SongCard({ track, variant = "full", onClick, onExplain }
                 role="listitem"
                 title={badge.label}
               >
-                {badge.emoji} {badge.label}
+                {renderBadgeIcon(badge.type)}
+                <span>{badge.label}</span>
               </span>
             ))}
           </div>
@@ -112,7 +170,8 @@ export default function SongCard({ track, variant = "full", onClick, onExplain }
             }}
             aria-label={`Explain why ${track.track_name} was recommended`}
           >
-            💡 Why recommended?
+            <HelpCircle size={13} className={styles.explainIcon} />
+            <span>Why recommended?</span>
           </button>
         )}
       </div>
@@ -121,16 +180,17 @@ export default function SongCard({ track, variant = "full", onClick, onExplain }
 }
 
 function ScoreBar({ label, value, color }: { label: string; value: number; color: string }) {
+  const clampedPct = Math.min(100, Math.max(0, Math.round(value * 100)));
   return (
     <div className={styles.scoreRow}>
       <span className={styles.scoreLabel}>{label}</span>
       <div className={styles.scoreTrack}>
         <div
           className={styles.scoreFill}
-          style={{ width: `${Math.round(value * 100)}%`, background: color }}
+          style={{ width: `${clampedPct}%`, background: color }}
         />
       </div>
-      <span className={styles.scoreValue}>{(value * 100).toFixed(0)}%</span>
+      <span className={styles.scoreValue}>{clampedPct}%</span>
     </div>
   );
 }

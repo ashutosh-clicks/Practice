@@ -1,4 +1,4 @@
-﻿"""
+"""
 FastAPI application — Music Recommendation System API.
 Serves content-based, collaborative, and context-aware recommendations.
 """
@@ -13,10 +13,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 from recommender import MusicRecommender
+from lastfm_user import LastFmUserService
 
 
-# ── Singleton recommender instance ──────────────────────────
+# ── Singleton instances ───────────────────────────────────────
 recommender = MusicRecommender(model_dir="models")
+lastfm_user_service = LastFmUserService(recommender=recommender)
 
 
 @asynccontextmanager
@@ -82,16 +84,18 @@ def health_check():
 @app.get("/search")
 def search_tracks(
     query: str = Query(..., min_length=1, description="Search query (track name or artist)"),
+    search_by: str = Query("all", description="Scope: all | track | artist"),
     n: int = Query(10, ge=1, le=30),
 ):
-    """Fuzzy search for tracks by name or artist."""
+    """Search tracks by name, artist, or both."""
     if not recommender.is_fitted:
         raise HTTPException(status_code=503, detail="Models not loaded. Run initialize.py first.")
     try:
-        results = recommender.search(query, n=n)
+        results = recommender.search(query, search_by=search_by, n=n)
         return {"results": results, "count": len(results)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
 
 
 @app.post("/recommend")
@@ -146,3 +150,84 @@ def list_activities():
 def list_moods():
     """Return all mood quadrant definitions."""
     return {"moods": recommender.get_moods()}
+
+
+@app.get("/random")
+def get_random_tracks(n: int = Query(5, ge=1, le=20)):
+    """Return random popular tracks for the surprise me feature."""
+    if not recommender.is_fitted:
+        raise HTTPException(status_code=503, detail="Models not loaded.")
+    return {"tracks": recommender.get_random_tracks(n=n)}
+
+
+@app.get("/stats")
+def get_model_stats():
+    """Return ML model architecture metrics and dataset statistics."""
+    if not recommender.is_fitted:
+        raise HTTPException(status_code=503, detail="Models not loaded.")
+    return recommender.get_stats()
+
+
+class ImportArtRequest(BaseModel):
+    api_key: Optional[str] = None
+    limit: int = Field(50, ge=5, le=500)
+
+
+@app.get("/album-art")
+def get_album_art(
+    track_id: str = Query(..., description="Track ID"),
+    artist: str = Query(..., description="Artist name"),
+    track: str = Query(..., description="Track name"),
+    album: Optional[str] = Query(None, description="Album name"),
+    lastfm_key: Optional[str] = Query(None, description="Last.fm API key"),
+):
+    """Retrieve high-res album art for a track from Last.fm or fallback."""
+    url = recommender.album_art.get_art_url(
+        track_id=track_id,
+        artist=artist,
+        track_name=track,
+        album_name=album,
+        lastfm_key=lastfm_key,
+    )
+    return {"image_url": url, "track_id": track_id}
+
+
+@app.post("/import-lastfm-art")
+def import_lastfm_art(body: ImportArtRequest):
+    """Batch import album art for popular catalog tracks."""
+    if recommender.spotify_df is None:
+        raise HTTPException(status_code=503, detail="Dataset not loaded.")
+    res = recommender.album_art.batch_import_art(
+        recommender.spotify_df,
+        lastfm_key=body.api_key,
+        limit=body.limit,
+    )
+    return res
+
+
+@app.get("/album-art/status")
+def get_art_status():
+    """Return album art cache statistics."""
+    cached = len(recommender.album_art.cache) if hasattr(recommender, "album_art") else 0
+    total = len(recommender.spotify_df) if recommender.spotify_df is not None else 0
+    return {
+        "cached_count": cached,
+        "total_tracks": total,
+        "has_lastfm_key": bool(os.environ.get("LASTFM_API_KEY")),
+    }
+
+
+@app.get("/user-profile")
+def get_user_profile(
+    username: str = Query(..., min_length=1, description="Last.fm username"),
+    period: str = Query("weekly", description="Period: weekly | monthly | yearly"),
+    api_key: Optional[str] = Query(None, description="Optional custom Last.fm API key"),
+):
+    """Retrieve Last.fm profile and listening trends for weekly, monthly, or yearly periods."""
+    try:
+        data = lastfm_user_service.get_user_profile(username=username, period=period, api_key=api_key)
+        return data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
