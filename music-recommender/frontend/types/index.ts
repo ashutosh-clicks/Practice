@@ -1,4 +1,4 @@
-﻿// Shared TypeScript types for the MusicMind application
+// Shared TypeScript types for the MusicMind application
 
 export interface AudioFeatures {
   danceability: number;
@@ -77,3 +77,17 @@ export interface HybridWeights {
   gamma: number;  // popularity
   delta: number;  // context
 }
+
+export interface FeatureComparisonItem {
+  seed: number;
+  recommended: number;
+  similar: boolean;
+}
+
+export interface ExplanationData {
+  seed_track: Track;
+  recommended_track: Track;
+  reasons: string[];
+  feature_comparison: Record<string, FeatureComparisonItem>;
+}
+

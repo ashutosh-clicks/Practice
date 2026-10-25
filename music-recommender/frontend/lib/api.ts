@@ -1,4 +1,4 @@
-﻿import { Track, RecommendRequest, Activity, MoodQuadrant } from "@/types";
+import { Track, RecommendRequest, Activity, MoodQuadrant, ExplanationData } from "@/types";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
@@ -29,6 +29,23 @@ export async function getRecommendations(body: RecommendRequest): Promise<Track[
   return data.recommendations;
 }
 
+export async function explainRecommendation(
+  seedTrackId: string,
+  recTrackId: string,
+  mood?: string,
+  activity?: string
+): Promise<ExplanationData> {
+  return apiFetch<ExplanationData>("/explain", {
+    method: "POST",
+    body: JSON.stringify({
+      seed_track_id: seedTrackId,
+      rec_track_id: recTrackId,
+      mood,
+      activity,
+    }),
+  });
+}
+
 export async function getActivities(): Promise<Activity[]> {
   const data = await apiFetch<{ activities: Activity[] }>("/activities");
   return data.activities;
@@ -42,3 +59,4 @@ export async function getMoods(): Promise<MoodQuadrant[]> {
 export async function checkHealth(): Promise<{ status: string; model_loaded: boolean; tracks_loaded: number }> {
   return apiFetch("/health");
 }
+

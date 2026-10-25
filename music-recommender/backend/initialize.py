@@ -1,4 +1,4 @@
-﻿"""
+"""
 Initialization script — trains and saves all models.
 Run this ONCE after placing the datasets in the data/ directories.
 
@@ -50,7 +50,8 @@ def main():
 
     rec = MusicRecommender(model_dir="models")
     rec.load_data(SPOTIFY_PATH, LASTFM_ARTISTS_PATH, LASTFM_USER_ARTISTS_PATH)
-    rec.fit(n_clusters=N_CLUSTERS)
+    k = min(N_CLUSTERS, max(5, len(rec.spotify_df) // 10))
+    rec.fit(n_clusters=k)
     rec.save()
 
     print("\n🎉  Initialization complete!")

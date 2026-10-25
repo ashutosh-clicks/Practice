@@ -1,4 +1,4 @@
-﻿"""
+"""
 Core Music Recommendation Engine
 Hybrid system: K-Means content-based (Spotify) + Item-based CF (Last.fm) + Context-aware (mood/activity).
 """
@@ -252,23 +252,43 @@ class MusicRecommender:
     # ─────────────────────────────────────────────────────────
 
     def search(self, query: str, n: int = 10) -> list[dict]:
-        """Fuzzy search tracks by name or artist."""
-        combined = (self.spotify_df["track_name"] + " - " + self.spotify_df["artists"]).str.lower()
-        matches = fuzzy_process.extract(query.lower().strip(), combined.tolist(), limit=n * 4)
-
+        """Search tracks by name or artist (substring match + fuzzy fallback)."""
+        q = query.lower().strip()
         results = []
         seen_ids: set[str] = set()
-        for _, score, idx in matches:
-            if score < 40:
-                continue
-            row = self.spotify_df.iloc[idx]
-            tid = str(row.get("track_id", idx))
-            if tid in seen_ids:
-                continue
-            seen_ids.add(tid)
-            results.append(self._row_to_dict(row))
-            if len(results) >= n:
-                break
+
+        # 1. Exact / substring match (fast, prioritizes high popularity)
+        name_mask = self.spotify_df["track_name"].str.lower().str.contains(q, regex=False, na=False)
+        artist_mask = self.spotify_df["artists"].str.lower().str.contains(q, regex=False, na=False)
+        exact_matches = self.spotify_df[name_mask | artist_mask].sort_values(
+            by="popularity", ascending=False
+        )
+        for _, row in exact_matches.iterrows():
+            tid = str(row.get("track_id", ""))
+            if tid not in seen_ids:
+                seen_ids.add(tid)
+                results.append(self._row_to_dict(row))
+                if len(results) >= n:
+                    return results
+
+        # 2. Fuzzy fallback if fewer than n results
+        if len(results) < n:
+            combined_dict = {
+                idx: f"{row['track_name']} - {row['artists']}".lower()
+                for idx, row in self.spotify_df.iterrows()
+            }
+            fuzzy_hits = fuzzy_process.extract(q, combined_dict, limit=n * 3)
+            for _, score, idx in fuzzy_hits:
+                if score < 45:
+                    continue
+                row = self.spotify_df.iloc[idx]
+                tid = str(row.get("track_id", idx))
+                if tid not in seen_ids:
+                    seen_ids.add(tid)
+                    results.append(self._row_to_dict(row))
+                    if len(results) >= n:
+                        break
+
         return results
 
     # ─────────────────────────────────────────────────────────
@@ -469,7 +489,7 @@ class MusicRecommender:
         if match is None:
             return {}
 
-        matched_name, _, _ = match
+        matched_name = match[0]
         artist_code = self.artist_name_to_code[matched_name]
         artist_vec = self.artist_matrix[artist_code]  # sparse (1, n_users)
 

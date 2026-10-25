@@ -1,23 +1,75 @@
-﻿.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: var(--space-5);
-}
-.item { animation: fadeUp var(--dur-slow) var(--ease) both; }
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
+/* Container for recommendation tiles */
+.tilesContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
 }
 
-/* Skeleton */
-.skeleton {
-  display: flex; background: var(--surface);
-  border: 1px solid var(--border); border-radius: var(--radius-xl);
-  overflow: hidden; animation: shimmer 1.5s ease-in-out infinite;
+.item {
+  animation: fadeUp var(--dur-normal) var(--ease) both;
 }
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Skeleton loader matching tile layout */
+.skeletonTile {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3) var(--space-5);
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
 @keyframes shimmer {
-  0%,100% { opacity: 0.5; } 50% { opacity: 1; }
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
 }
-.skeletonArt { width: 80px; height: 80px; background: var(--surface-raised); flex-shrink: 0; }
-.skeletonBody { padding: var(--space-4); flex: 1; display: flex; flex-direction: column; gap: var(--space-3); justify-content: center; }
-.skeletonLine { height: 10px; background: var(--surface-raised); border-radius: var(--radius-sm); }
+
+.skeletonRank {
+  width: 24px;
+  height: 18px;
+  background: var(--surface-raised);
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.skeletonArt {
+  width: 44px;
+  height: 44px;
+  background: var(--surface-raised);
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+}
+
+.skeletonInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.skeletonLine {
+  height: 12px;
+  background: var(--surface-raised);
+  border-radius: var(--radius-sm);
+}
+
+.skeletonScore {
+  width: 68px;
+  height: 40px;
+  background: var(--surface-raised);
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+}

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { Track, Badge } from "@/types";
 import FeatureRadarChart from "./FeatureRadarChart";
@@ -8,6 +8,7 @@ interface Props {
   track: Track;
   variant?: "compact" | "full" | "seed";
   onClick?: () => void;
+  onExplain?: () => void;
 }
 
 const BADGE_STYLES: Record<string, string> = {
@@ -24,7 +25,7 @@ function formatDuration(ms: number): string {
   return `${min}:${sec.toString().padStart(2, "0")}`;
 }
 
-export default function SongCard({ track, variant = "full", onClick }: Props) {
+export default function SongCard({ track, variant = "full", onClick, onExplain }: Props) {
   const isClickable = !!onClick;
   const isSeed = variant === "seed";
   const isCompact = variant === "compact";
@@ -98,6 +99,21 @@ export default function SongCard({ track, variant = "full", onClick }: Props) {
             <ScoreBar label="Collab" value={track.scores.collaborative} color="var(--badge-collab-text)" />
             <ScoreBar label="Context" value={track.scores.context} color="var(--badge-context-text)" />
           </div>
+        )}
+
+        {/* Explain match button */}
+        {onExplain && !isSeed && (
+          <button
+            type="button"
+            className={styles.explainButton}
+            onClick={(e) => {
+              e.stopPropagation();
+              onExplain();
+            }}
+            aria-label={`Explain why ${track.track_name} was recommended`}
+          >
+            💡 Why recommended?
+          </button>
         )}
       </div>
     </article>

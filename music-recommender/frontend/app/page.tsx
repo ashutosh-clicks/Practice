@@ -1,12 +1,13 @@
-﻿"use client";
+"use client";
 
 import { useState, useCallback, useEffect } from "react";
-import { Track, HybridWeights, Activity, MoodQuadrant } from "@/types";
-import { searchTracks, getRecommendations, getActivities, getMoods } from "@/lib/api";
+import { Track, HybridWeights, Activity, MoodQuadrant, ExplanationData } from "@/types";
+import { searchTracks, getRecommendations, getActivities, getMoods, explainRecommendation } from "@/lib/api";
 import SearchBar from "@/components/SearchBar";
 import SongCard from "@/components/SongCard";
 import RecommendationGrid from "@/components/RecommendationGrid";
 import ContextPanel from "@/components/ContextPanel";
+import ExplanationModal from "@/components/ExplanationModal";
 import styles from "./page.module.css";
 
 const DEFAULT_WEIGHTS: HybridWeights = { alpha: 0.4, beta: 0.3, gamma: 0.1, delta: 0.2 };
@@ -23,6 +24,10 @@ export default function Home() {
   const [weights, setWeights] = useState<HybridWeights>(DEFAULT_WEIGHTS);
   const [activities, setActivities] = useState<Activity[]>([]);
   const [moods, setMoods] = useState<MoodQuadrant[]>([]);
+  const [explainingTrack, setExplainingTrack] = useState<Track | null>(null);
+  const [explanationData, setExplanationData] = useState<ExplanationData | null>(null);
+  const [isExplaining, setIsExplaining] = useState(false);
+  const [recLimit, setRecLimit] = useState<number>(10);
 
   useEffect(() => {
     getActivities().then(setActivities).catch(() => {});
@@ -107,6 +112,26 @@ export default function Home() {
     }
   }, [seedTrack, selectedMood, selectedActivity]);
 
+  const handleExplain = useCallback(async (recTrack: Track) => {
+    if (!seedTrack) return;
+    setExplainingTrack(recTrack);
+    setIsExplaining(true);
+    setExplanationData(null);
+    try {
+      const exp = await explainRecommendation(
+        seedTrack.track_id,
+        recTrack.track_id,
+        selectedMood,
+        selectedActivity
+      );
+      setExplanationData(exp);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsExplaining(false);
+    }
+  }, [seedTrack, selectedMood, selectedActivity]);
+
   return (
     <div className={styles.appShell}>
       {/* ── Header ── */}
@@ -174,22 +199,49 @@ export default function Home() {
           {/* Recommendations */}
           {(recommendations.length > 0 || isRecommending) && (
             <section className={styles.recsSection}>
-              <h2 className={styles.sectionTitle}>
-                Recommendations
-                {selectedActivity && (
-                  <span className={styles.contextBadge}>
-                    {activities.find((a) => a.key === selectedActivity)?.emoji}{" "}
-                    {activities.find((a) => a.key === selectedActivity)?.name}
-                  </span>
-                )}
-                {selectedMood && (
-                  <span className={styles.moodBadge}>
-                    {moods.find((m) => m.key === selectedMood)?.emoji}{" "}
-                    {moods.find((m) => m.key === selectedMood)?.name}
-                  </span>
-                )}
-              </h2>
-              <RecommendationGrid tracks={recommendations} isLoading={isRecommending} />
+              <div className={styles.recsHeader}>
+                <div className={styles.recsTitleGroup}>
+                  <h2 className={styles.sectionTitle} style={{ margin: 0 }}>
+                    Recommended Songs
+                  </h2>
+                  {selectedActivity && (
+                    <span className={styles.contextBadge}>
+                      {activities.find((a) => a.key === selectedActivity)?.emoji}{" "}
+                      {activities.find((a) => a.key === selectedActivity)?.name}
+                    </span>
+                  )}
+                  {selectedMood && (
+                    <span className={styles.moodBadge}>
+                      {moods.find((m) => m.key === selectedMood)?.emoji}{" "}
+                      {moods.find((m) => m.key === selectedMood)?.name}
+                    </span>
+                  )}
+                </div>
+
+                <div className={styles.countSelector} role="group" aria-label="Show top recommendations count">
+                  <button
+                    type="button"
+                    className={`${styles.countBtn} ${recLimit === 5 ? styles.countBtnActive : ""}`}
+                    onClick={() => setRecLimit(5)}
+                  >
+                    Top 5
+                  </button>
+                  <button
+                    type="button"
+                    className={`${styles.countBtn} ${recLimit === 10 ? styles.countBtnActive : ""}`}
+                    onClick={() => setRecLimit(10)}
+                  >
+                    Top 10
+                  </button>
+                </div>
+              </div>
+
+              <RecommendationGrid
+                tracks={recommendations.slice(0, recLimit)}
+                isLoading={isRecommending}
+                onExplain={handleExplain}
+                onSelectAsSeed={handleSelectSeed}
+              />
             </section>
           )}
 
@@ -211,6 +263,14 @@ export default function Home() {
           )}
         </main>
       </div>
+
+      {/* Explanation Modal */}
+      <ExplanationModal
+        isOpen={!!explainingTrack}
+        onClose={() => setExplainingTrack(null)}
+        data={explanationData}
+        isLoading={isExplaining}
+      />
     </div>
   );
 }
