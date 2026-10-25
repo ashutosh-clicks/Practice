@@ -2,15 +2,46 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { Track, HybridWeights, Activity, MoodQuadrant, ExplanationData } from "@/types";
-import { searchTracks, getRecommendations, getActivities, getMoods, explainRecommendation } from "@/lib/api";
+import { searchTracks, getRecommendations, getActivities, getMoods, explainRecommendation, checkHealth } from "@/lib/api";
 import SearchBar from "@/components/SearchBar";
 import SongCard from "@/components/SongCard";
 import RecommendationGrid from "@/components/RecommendationGrid";
 import ContextPanel from "@/components/ContextPanel";
 import ExplanationModal from "@/components/ExplanationModal";
+import HowItWorksModal from "@/components/HowItWorksModal";
 import styles from "./page.module.css";
 
 const DEFAULT_WEIGHTS: HybridWeights = { alpha: 0.4, beta: 0.3, gamma: 0.1, delta: 0.2 };
+
+const PRESETS: Record<string, { label: string; emoji: string; weights: HybridWeights; activity?: string }> = {
+  balanced: {
+    label: "Balanced",
+    emoji: "⚖️",
+    weights: { alpha: 0.40, beta: 0.30, gamma: 0.10, delta: 0.20 },
+  },
+  sonic: {
+    label: "Sonic Match",
+    emoji: "🎯",
+    weights: { alpha: 0.70, beta: 0.10, gamma: 0.05, delta: 0.15 },
+  },
+  discovery: {
+    label: "Discovery",
+    emoji: "👥",
+    weights: { alpha: 0.15, beta: 0.65, gamma: 0.05, delta: 0.15 },
+  },
+  hits: {
+    label: "Hit Radio",
+    emoji: "🔥",
+    weights: { alpha: 0.20, beta: 0.20, gamma: 0.50, delta: 0.10 },
+  },
+  ambient: {
+    label: "Focus",
+    emoji: "🧘",
+    weights: { alpha: 0.25, beta: 0.15, gamma: 0.05, delta: 0.55 },
+    activity: "focus",
+  },
+};
+
 
 export default function Home() {
   const [searchResults, setSearchResults] = useState<Track[]>([]);
@@ -28,10 +59,16 @@ export default function Home() {
   const [explanationData, setExplanationData] = useState<ExplanationData | null>(null);
   const [isExplaining, setIsExplaining] = useState(false);
   const [recLimit, setRecLimit] = useState<number>(10);
+  const [activePreset, setActivePreset] = useState<string>("balanced");
+  const [isHowItWorksOpen, setIsHowItWorksOpen] = useState(false);
+  const [tracksLoaded, setTracksLoaded] = useState<number | null>(null);
 
   useEffect(() => {
     getActivities().then(setActivities).catch(() => {});
     getMoods().then(setMoods).catch(() => {});
+    checkHealth()
+      .then((h) => setTracksLoaded(h.tracks_loaded))
+      .catch(() => {});
   }, []);
 
   const handleSearch = useCallback(async (query: string) => {
@@ -132,16 +169,105 @@ export default function Home() {
     }
   }, [seedTrack, selectedMood, selectedActivity]);
 
+  const handleSelectPreset = useCallback(
+    async (presetKey: string) => {
+      const preset = PRESETS[presetKey];
+      if (!preset) return;
+      setActivePreset(presetKey);
+      setWeights(preset.weights);
+      const nextActivity = preset.activity ?? selectedActivity;
+      if (preset.activity) setSelectedActivity(preset.activity);
+
+      if (!seedTrack) return;
+      setIsRecommending(true);
+      try {
+        const recs = await getRecommendations({
+          track_id: seedTrack.track_id,
+          mood: selectedMood,
+          activity: nextActivity,
+          ...preset.weights,
+          n: 10,
+        });
+        setRecommendations(recs);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setIsRecommending(false);
+      }
+    },
+    [seedTrack, selectedMood, selectedActivity]
+  );
+
+  const handleResetAll = useCallback(() => {
+    setSeedTrack(null);
+    setRecommendations([]);
+    setSearchResults([]);
+    setSelectedMood(undefined);
+    setSelectedActivity(undefined);
+    setWeights(DEFAULT_WEIGHTS);
+    setActivePreset("balanced");
+  }, []);
+
   return (
     <div className={styles.appShell}>
       {/* ── Header ── */}
       <header className={styles.header}>
         <div className={styles.headerInner}>
-          <div className={styles.logo}>
-            <span className={styles.logoIcon}>🎵</span>
-            <span className={styles.logoText}>MusicMind</span>
+          {/* Brand Group */}
+          <div className={styles.brandGroup}>
+            <div className={styles.logo}>
+              <span className={styles.logoIcon}>🎵</span>
+              <span className={styles.logoText}>MusicMind</span>
+            </div>
+            <span className={styles.versionBadge}>Hybrid ML</span>
           </div>
-          <p className={styles.tagline}>Hybrid AI music recommendations — content · collaborative · context-aware</p>
+
+          {/* Quick Presets */}
+          <div className={styles.presetsGroup} role="group" aria-label="Recommendation Presets">
+            {Object.entries(PRESETS).map(([key, p]) => (
+              <button
+                key={key}
+                type="button"
+                className={`${styles.presetBtn} ${activePreset === key ? styles.presetBtnActive : ""}`}
+                onClick={() => handleSelectPreset(key)}
+                title={`Preset: ${p.label}`}
+              >
+                <span>{p.emoji}</span>
+                <span>{p.label}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* Header Controls */}
+          <div className={styles.headerActions}>
+            <div className={styles.healthBadge} title="API & Machine Learning Models Status">
+              <span className={styles.healthDot} />
+              <span>{tracksLoaded !== null ? `${tracksLoaded} Tracks` : "Models Active"}</span>
+            </div>
+
+            <button
+              type="button"
+              className={styles.headerBtn}
+              onClick={() => setIsHowItWorksOpen(true)}
+              aria-label="How MusicMind works"
+            >
+              <span>ℹ️</span>
+              <span>How It Works</span>
+            </button>
+
+            {(seedTrack || selectedMood || selectedActivity) && (
+              <button
+                type="button"
+                className={`${styles.headerBtn} ${styles.resetBtn}`}
+                onClick={handleResetAll}
+                aria-label="Reset all selections"
+                title="Clear current track and context filters"
+              >
+                <span>🔄</span>
+                <span>Reset</span>
+              </button>
+            )}
+          </div>
         </div>
       </header>
 
@@ -271,6 +397,13 @@ export default function Home() {
         data={explanationData}
         isLoading={isExplaining}
       />
+
+      {/* How It Works Architecture Modal */}
+      <HowItWorksModal
+        isOpen={isHowItWorksOpen}
+        onClose={() => setIsHowItWorksOpen(false)}
+      />
     </div>
   );
 }
+
