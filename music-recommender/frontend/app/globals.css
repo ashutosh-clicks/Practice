@@ -1,0 +1,109 @@
+﻿@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* ══════════════════════════════════════════════════
+   Design Tokens
+══════════════════════════════════════════════════ */
+:root {
+  /* Colors — Dark theme only */
+  --bg:              #0F0F0F;
+  --surface:         #1A1A1A;
+  --surface-raised:  #242424;
+  --surface-hover:   #2E2E2E;
+  --border:          #2D2D2D;
+  --border-subtle:   #1F1F1F;
+
+  --text-primary:    #F9FAFB;
+  --text-secondary:  #D1D5DB;
+  --text-muted:      #9CA3AF;
+  --text-disabled:   #6B7280;
+
+  --accent:          #0EA5E9;
+  --accent-hover:    #0284C7;
+  --accent-active:   #0369A1;
+  --accent-ghost:    rgba(14, 165, 233, 0.08);
+  --accent-glow:     rgba(14, 165, 233, 0.20);
+
+  --success:         #16A34A;
+  --success-bg:      rgba(22, 163, 74, 0.10);
+  --warning:         #D97706;
+  --error:           #DC2626;
+
+  /* Badge colors */
+  --badge-content:       rgba(14, 165, 233, 0.15);
+  --badge-collab:        rgba(139, 92, 246, 0.15);
+  --badge-context:       rgba(16, 185, 129, 0.15);
+  --badge-trending:      rgba(245, 158, 11, 0.15);
+  --badge-content-text:  #38BDF8;
+  --badge-collab-text:   #A78BFA;
+  --badge-context-text:  #34D399;
+  --badge-trending-text: #FBBF24;
+
+  /* Spacing */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+
+  /* Typography */
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --text-xs:   0.75rem;
+  --text-sm:   0.875rem;
+  --text-base: 1rem;
+  --text-lg:   1.125rem;
+  --text-xl:   1.25rem;
+  --text-2xl:  1.5rem;
+  --text-3xl:  1.875rem;
+  --text-4xl:  2.25rem;
+
+  /* Border radius */
+  --radius-sm:   4px;
+  --radius-md:   8px;
+  --radius-lg:   12px;
+  --radius-xl:   16px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.3);
+  --shadow-lg: 0 10px 25px rgba(0,0,0,0.5), 0 4px 10px rgba(0,0,0,0.3);
+  --shadow-glow: 0 0 20px var(--accent-glow);
+
+  /* Transitions */
+  --ease:        cubic-bezier(0.4, 0, 0.2, 1);
+  --dur-fast:    100ms;
+  --dur-normal:  200ms;
+  --dur-slow:    300ms;
+}
+
+/* ══════════════════════════════════════════════════
+   Reset & Base
+══════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; padding: 0; margin: 0; }
+
+html { height: 100%; color-scheme: dark; scroll-behavior: smooth; }
+
+body {
+  min-height: 100%;
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+a { color: inherit; text-decoration: none; }
+button { cursor: pointer; border: none; background: none; font-family: inherit; }
+input, select, textarea { font-family: inherit; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}
